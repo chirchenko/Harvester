@@ -23,6 +23,7 @@ public class LogoWindow extends JWindow {
 	public LogoWindow(double width, double height){
 		
 		init(width, height);
+		this.setSize((int)width, (int)height);
 	}
 	
 	private void init(double width, double height){
@@ -40,31 +41,31 @@ public class LogoWindow extends JWindow {
 	    c.gridy = 0;
 	    c.gridwidth = 6;
 	    c.gridheight = 4;
+//	    c.anchor = ;
 		this.add(new ImagePanel(image), c);
 		
-		JLabel statusText = new JLabel("sdffffffffffffffffffff");			   
-	    c.fill = GridBagConstraints.HORIZONTAL;
-	    c.gridx = 0;
-	    c.gridy = 4;
-	    c.gridwidth = 5;
-	    c.gridheight = 1;
-		c.anchor = GridBagConstraints.LAST_LINE_START;
-		this.add(statusText, c);
-		
-		JButton exitBtn = new JButton("Abort");
-		exitBtn.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(ABORT);				
-			}
-		});
-		c.gridx = 6;
-		c.gridy = 4;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.LAST_LINE_END;
-		this.add(exitBtn, c);
-		
-		this.pack();		
+//		JLabel statusText = new JLabel("sdffffffffffffffffffff");			   
+//	    c.fill = GridBagConstraints.HORIZONTAL;
+//	    c.gridx = 0;
+//	    c.gridy = 4;
+//	    c.gridwidth = 5;
+//	    c.gridheight = 1;
+//		c.anchor = GridBagConstraints.LAST_LINE_START;
+//		this.add(statusText, c);
+//		
+//		JButton exitBtn = new JButton("Abort");
+//		exitBtn.addActionListener(new ActionListener() {			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				System.exit(ABORT);				
+//			}
+//		});
+//		c.gridx = 6;
+//		c.gridy = 4;
+//		c.gridwidth = 1;
+//		c.anchor = GridBagConstraints.LAST_LINE_END;
+//		this.add(exitBtn, c);
+//		
 	}
 	
 	public static class ImagePanel extends JPanel{
