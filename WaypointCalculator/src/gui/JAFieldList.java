@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Dimension;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -13,7 +12,6 @@ import javax.swing.ListSelectionModel;
 
 import domains.Fields;
 import domains.Fields.Field;
-import geometry.Point;
 
 @SuppressWarnings("serial")
 public class JAFieldList extends JPanel{

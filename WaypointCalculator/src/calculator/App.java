@@ -5,7 +5,10 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.IOException;
 
+import javax.swing.JWindow;
+
 import datasource.DataSource;
+import gui.LogoWindow;
 import gui.MainWindow;
 import logginig.Logger;
 import logginig.Logger.LogLevel;
@@ -18,26 +21,36 @@ public class App{
 	//public static JACanvas canvas;
 	public static int COORDINATE_PRECISION = 6;
 	public static WaypointFinder wpf;
+	public static Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     
 	public static void main(String[] args) throws IOException{		
 
 		Logger.setLogLevel(LogLevel.INFO.getMask() | LogLevel.DEBUG.getMask());
 		Logger.subscribe(new StdOutLogger());
-		//ds = new SemiFileDS(new File("ds.txt"));
+		
+		init();
+		//showIface();				
+	}
 
-		//canvas = new JACanvas();
+	private static void init() {
+		int logoWidth = dim.width*2/5;
+		int logoHeight = dim.height*2/5;
 		
-		//wpf = new WaypointFinder(ds);
+		LogoWindow logo = new LogoWindow(logoWidth, logoHeight);
+		logo.setLocation((dim.width/2) - logoWidth/2, (dim.height/2) - logoHeight/2);
+		EventQueue.invokeLater(() -> {
+			logo.setVisible(true);
+        });
 		
-		//System.out.println(wpf.getWaypoints());
-		
+	}
+	
+	private static void showIface() {
 		MainWindow mw= new MainWindow();
-		
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		mw.setSize(screenSize.width*3/4, screenSize.height*3/4);
+		mw.setSize(dim.width*3/4, dim.height*3/4);
 		mw.setLocationByPlatform(true);
 		EventQueue.invokeLater(() -> {
 			mw.setVisible(true);
         });
 	}
+
 }

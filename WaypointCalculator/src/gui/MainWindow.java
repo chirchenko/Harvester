@@ -120,7 +120,7 @@ public class MainWindow  extends JFrame {
                 if(e.getClickCount()==2 && !e.isConsumed()){
                 	e.consume();
                 	
-                	fieldPoints = fieldList.getSelected().getFieldPoints();
+                	fieldPoints = fieldList.getSelected().fieldPoints;
                 	
                 	Polygon polygon = new Polygon(fieldPoints);
 					display.setMapForArea(polygon.getDimention());
@@ -138,7 +138,7 @@ public class MainWindow  extends JFrame {
         machineList.displayList.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e){
-            	workWidth = machineList.getSelected().getWorkItemWidth();   
+            	workWidth = machineList.getSelected().workWidth;   
             }
         });
         

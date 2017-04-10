@@ -16,20 +16,11 @@ public class Machinery {
 	
 	private static Logger logger = Logger.getLogger(Machinery.class);
 	
-	static{
-//		machinery.add(new Machine("John Deere T660", 5));
-//		machinery.add(new Machine("Claas Lexion 480", 5.3));
-//		machinery.add(new Machine("Єнісей 1200", 4));
-//		machinery.add(new Machine("Славутич КЗС 9", 3));
-//		machinery.add(new Machine("Єнісей 950-1", 3.5));
-			
-	}
-	
 	public static class Machine{
-		private int id;
-		private String name;
-		private double workWidth;
-		private double fuel;
+		public int id;
+		public String name;
+		public double workWidth;
+		public double fuel;
 
 		private Machine load(ResultSet rs) throws SQLException{
 			this.id = rs.getInt("ID");         
@@ -38,6 +29,12 @@ public class Machinery {
 			this.fuel = rs.getDouble("FUEL");
 			return this;
 		}
+		
+		private void save(){
+			if(this.id == 0){
+				this.id = DBHelper.getNextSequence(Machinery.TABLE_NAME);
+			}			
+		}	
 		
 		@Override
 		public String toString() {
@@ -62,6 +59,7 @@ public class Machinery {
 			List<Machine> res =  machinery.stream().filter(t -> t.id == o.id).collect(Collectors.toList());
 			
 			if(res.isEmpty()){
+				o.save();
 				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME, WORK_WIDTH, FUEL) VALUES (?, ?, ?, ?, ?)", TABLE_NAME), new Object[]{o.id, o.name, o.workWidth, o.fuel });//insert
 			} else {
 				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ?, WORK_WIDTH = ?, FUEL = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.name, o.workWidth, o.fuel, o.id });//update
