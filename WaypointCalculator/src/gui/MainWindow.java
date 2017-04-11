@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -15,6 +17,9 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
@@ -65,6 +70,58 @@ public class MainWindow extends JFrame implements MouseListener{
         setTitle("Waypoint Calculator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
+        JMenuBar menubar = new JMenuBar();
+
+        JMenu file = new JMenu("File");
+        file.setMnemonic(KeyEvent.VK_F);
+        
+        JMenu tools = new JMenu("Tools");
+        file.setMnemonic(KeyEvent.VK_T);
+        
+        JMenu help = new JMenu("Help");
+        file.setMnemonic(KeyEvent.VK_H);
+
+        JMenuItem eMenuItem = new JMenuItem("Exit");
+        eMenuItem.setMnemonic(KeyEvent.VK_X);
+        eMenuItem.setToolTipText("Exit application");
+        eMenuItem.addActionListener((ActionEvent event) -> {
+            System.exit(0);
+        });
+        
+        JMenuItem importMenuItem = new JMenuItem("Import");
+        importMenuItem.setMnemonic(KeyEvent.VK_I);
+        importMenuItem.setToolTipText("Import from XML file");
+        importMenuItem.addActionListener((ActionEvent event) -> {
+            runImport();
+        });
+        
+        JMenuItem exportMenuItem = new JMenuItem("Export");
+        exportMenuItem.setMnemonic(KeyEvent.VK_E);
+        exportMenuItem.setToolTipText("Export to XML file");
+        exportMenuItem.addActionListener((ActionEvent event) -> {
+            runExport();
+        });
+        
+        JMenuItem aboutMenuItem = new JMenuItem("About");
+        aboutMenuItem.setMnemonic(KeyEvent.VK_A);
+        aboutMenuItem.setToolTipText("Show information");
+        aboutMenuItem.addActionListener((ActionEvent event) -> {
+            runAbout();
+        });
+
+        file.add(eMenuItem);
+        
+        tools.add(importMenuItem);
+        tools.add(exportMenuItem);
+        
+        help.add(aboutMenuItem);
+
+        menubar.add(file);
+        menubar.add(tools);
+        menubar.add(help);
+
+        setJMenuBar(menubar);
+        
         JPanel windowContainer = new JPanel(new BorderLayout());	    
         JPanel sidePanel = new JPanel(new BorderLayout());
         
@@ -95,6 +152,21 @@ public class MainWindow extends JFrame implements MouseListener{
         machineList.displayList.addMouseListener(this);
 	}
 	
+	private void runAbout() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void runExport() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void runImport() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void fieldSelected() {
 		display.field = fieldList.getSelected();
 		    	
@@ -133,7 +205,9 @@ public class MainWindow extends JFrame implements MouseListener{
 		int turns = wpf.getPath().getWaypoints().size();
 		double fuelConsumption = display.machine.fuel;
 		double totalConsumption = fuelConsumption * distance / 1000;
-		display.label.setText(String.format("Overal distance: %.2f m, Number of turns: %d, Fuel consumption: %.2f litres(%.4f l/km)", distance, turns, totalConsumption, fuelConsumption));
+		String result = String.format("Overal distance: %.2f m, Number of turns: %d, Fuel consumption: %.2f litres(%.4f l/km)", distance, turns, totalConsumption, fuelConsumption);
+		logger.info(result);
+		display.label.setText(result);
 	}
 	
 	@Override

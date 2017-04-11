@@ -1,7 +1,5 @@
 package gui;
 
-import java.awt.Dimension;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JList;
