@@ -10,8 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import logginig.Logger;
 
@@ -23,23 +21,23 @@ public class DBHelper{
 	private final static String SQL_DB_JDBC = "jdbc:sqlite:";
 	private final static String SQL_DB_NAME = "database.db";
 
-	public static void main( String args[] )
-	{
-		try {
-			if(!isDbInitailized()){
-				System.out.println("Running DB initialization: " + executePlainUpdate(getSqlText("create-schema.sql")));
-			}
-			List<Object> parameters = new ArrayList<>();
-	
-			parameters.add("���� �456");
-			parameters.add("15");
-			executeUpdate("INSERT INTO FIELDS(NAME, AGE) VALUES(?, ?)", parameters.toArray());
-			
-		}catch ( Exception e ) {
-			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-			return;
-		}
-	}
+//	public static void main( String args[] )
+//	{
+//		try {
+//			if(!isDbInitailized()){
+//				System.out.println("Running DB initialization: " + executePlainUpdate(getSqlText("create-schema.sql")));
+//			}
+//			List<Object> parameters = new ArrayList<>();
+//	
+//			parameters.add("���� �456");
+//			parameters.add("15");
+//			executeUpdate("INSERT INTO FIELDS(NAME, AGE) VALUES(?, ?)", parameters.toArray());
+//			
+//		}catch ( Exception e ) {
+//			logger.info( e.getClass().getName() + ": " + e.getMessage() );
+//			return;
+//		}
+//	}
 
 	private static boolean isDbInitailized() {
 		Connection c = DBHelper.getConnection();		
@@ -58,7 +56,7 @@ public class DBHelper{
 		if(c == null) return null;
 		try {
 			stmt = c.prepareStatement(sqlText);
-			for(int i = 0; i < parameters.length; i++){
+			for(int i = 0; parameters != null && i < parameters.length; i++){
 				stmt.setObject(i + 1, parameters[i]);
 			}
 			res = stmt.executeQuery();
@@ -66,9 +64,9 @@ public class DBHelper{
 			
 		} catch (SQLException e) {
 			if(stmt == null){
-				System.err.println("Database is not openned");
+				logger.info("Database is not openned");
 			}
-			System.err.println("Error while executing statement: \n" + sqlText);
+			logger.info("Error while executing statement: \n" + sqlText);
 			e.printStackTrace();	
 			rollback();
 			
@@ -92,9 +90,9 @@ public class DBHelper{
 			commit();
 		} catch (SQLException e) {
 			if(stmt == null){
-				System.err.println("Database is not openned");
+				logger.info("Database is not openned");
 			}
-			System.err.println("Error while executing statement: \n" + sqlText);
+			logger.info("Error while executing statement: \n" + sqlText);
 			e.printStackTrace();	
 			rollback();			
 			
@@ -114,9 +112,9 @@ public class DBHelper{
 			commit();
 		} catch (SQLException e) {
 			if(stmt == null){
-				System.err.println("Database is not openned");
+				logger.info("Database is not openned");
 			}
-			System.err.println("Error while executing statement: \n" + sqlText);
+			logger.info("Error while executing statement: \n" + sqlText);
 			e.printStackTrace();	
 			rollback();
 			
@@ -140,11 +138,11 @@ public class DBHelper{
 			conn = DriverManager.getConnection(SQL_DB_JDBC + SQL_DB_NAME);		
 			conn.setAutoCommit(false);
 		} catch (ClassNotFoundException e) {
-			System.err.println("Place SQLite driver to ../lib folder");
+			logger.info("Place SQLite driver to ../lib folder");
 			e.printStackTrace();			
 		} catch (SQLException e) {
 			if(conn == null){
-				System.err.println("SQL exception occured while creating connection: %s");
+				logger.info("SQL exception occured while creating connection: %s");
 			}			
 			e.printStackTrace();
 		}
@@ -214,6 +212,33 @@ public class DBHelper{
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	public static boolean checkDB() {
+		logger.info("Checking database");
+		
+		logger.info("Attempting to connect: " + SQL_DB_JDBC + SQL_DB_NAME);
+		if(new File(SQL_DB_NAME).exists()){
+			logger.info("Database exists. Connecting...");
+		}else{
+			logger.info("Database does not exists. Creating...");
+		}
+		if(DBHelper.getConnection() == null){
+			logger.info("Failed to create connection");
+			return false;
+		}
+		
+		logger.info("Validating schema");
+		if(!isDbInitailized()){
+			logger.info("Database is not initialized. Running core script...");
+			try {
+				executePlainUpdate(getSqlText("create-schema.sql"));
+			} catch (IOException e) {
+				logger.info(e.getMessage());
+				return false;
+			}
+		}
+		return true;		
 	}
 	
 }

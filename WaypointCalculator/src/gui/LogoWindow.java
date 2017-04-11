@@ -3,9 +3,9 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,15 +18,69 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 
-public class LogoWindow extends JWindow {
+import SQLUtils.DBHelper;
+import calculator.App;
+import domains.Fields;
+import domains.Machinery;
+import domains.Points;
+import logginig.LogListener;
+import logginig.Logger;
+import logginig.Logger.LogLevel;
+
+@SuppressWarnings("serial")
+public class LogoWindow extends JWindow implements ActionListener {
+	
 	private String imagePath = "resources/img/logo.jpg";
-	public LogoWindow(double width, double height){
+	private StatusLabel label;
+	
+	private static Logger logger = Logger.getLogger(LogoWindow.class);
+	
+	public LogoWindow(){
+		int width = App.dim.width*2/5;
+		int height = App.dim.height*2/5;
 		
-		init(width, height);
+		initIface(width, height);		
+		this.setLocation((App.dim.width/2) - width/2, (App.dim.height/2) - height/2);
+		this.setVisible(true);		
 		this.setSize((int)width, (int)height);
+		
+		initApplication();
 	}
 	
-	private void init(double width, double height){
+	private void initApplication() {
+		Logger.subscribe(label);
+		
+		logger.info("Starting application");
+		if(!DBHelper.checkDB())	return;
+		logger.info("Loading dataase objects");
+		
+		if(!Points.loadAll()) return;
+		if(!Machinery.loadAll()) return;
+		if(!Fields.loadAll()) return;
+		
+		logger.info("Application data ready");
+		logger.info("Developed by Oleksii Polishchuk");
+		Logger.unsubscribe(label);
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		this.setVisible(false);
+		MainWindow mw= new MainWindow();
+		mw.setSize(App.dim.width*3/4, App.dim.height*3/4);
+		mw.setLocationByPlatform(true);
+		EventQueue.invokeLater(() -> {
+			mw.setVisible(true);
+        });
+	}
+
+	private void initIface(double width, double height){
+		this.setLayout(new BorderLayout());
+		
 		Image image = null; 
 		try {
 			image = ImageIO.read(new File(imagePath));
@@ -34,38 +88,20 @@ public class LogoWindow extends JWindow {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.setBackground(new Color(206, 224, 255));
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-	    c.gridx = 0;
-	    c.gridy = 0;
-	    c.gridwidth = 6;
-	    c.gridheight = 4;
-//	    c.anchor = ;
-		this.add(new ImagePanel(image), c);
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(237, 237, 237));
 		
-//		JLabel statusText = new JLabel("sdffffffffffffffffffff");			   
-//	    c.fill = GridBagConstraints.HORIZONTAL;
-//	    c.gridx = 0;
-//	    c.gridy = 4;
-//	    c.gridwidth = 5;
-//	    c.gridheight = 1;
-//		c.anchor = GridBagConstraints.LAST_LINE_START;
-//		this.add(statusText, c);
-//		
-//		JButton exitBtn = new JButton("Abort");
-//		exitBtn.addActionListener(new ActionListener() {			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				System.exit(ABORT);				
-//			}
-//		});
-//		c.gridx = 6;
-//		c.gridy = 4;
-//		c.gridwidth = 1;
-//		c.anchor = GridBagConstraints.LAST_LINE_END;
-//		this.add(exitBtn, c);
-//		
+		JButton button = new JButton("Abort");
+		label = new StatusLabel();
+		label.setBackground(Color.RED);
+		label.setPreferredSize(new Dimension((int)( width - button.getPreferredSize().getWidth()-10), (int )label.getPreferredSize().getHeight()));
+		panel.add(label);
+		panel.add(button);
+		
+		this.add(new ImagePanel(image), BorderLayout.CENTER);
+		this.add(panel, BorderLayout.SOUTH);
+		
+		button.addActionListener(this);
 	}
 	
 	public static class ImagePanel extends JPanel{
@@ -84,8 +120,26 @@ public class LogoWindow extends JWindow {
 			}
 		}
 	}
+	
+	public static class StatusLabel extends JLabel implements LogListener{
 
-	
-	
-	
+		public StatusLabel() {
+			super("Component initialized");
+			this.setFont(new Font("Consolas", Font.PLAIN, 18));
+		}
+
+		@Override
+		public void update(LogLevel level, Class<?> clazz, String message) {
+			this.setText(message);
+		}
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().getClass().isAssignableFrom(JButton.class)){
+			System.exit(ABORT);
+		}
+		
+	}
 }

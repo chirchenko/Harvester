@@ -42,7 +42,9 @@ public class Machinery {
 		}		
 	}
 	
-	public static void loadAll(){
+	public static boolean loadAll(){
+
+		logger.info("Loading Machinery...");
 		machinery = new ArrayList<>();
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME, WORK_WIDTH, FUEL FROM %s", TABLE_NAME), null);
 		try {
@@ -51,7 +53,10 @@ public class Machinery {
 			}
 		} catch (SQLException e) {
 			logger.debug(e.getMessage());
+			return false;
 		}
+		logger.info(String.format("\tLoaded %d machines", machinery.size()));
+		return true;		
 	}
 	
 	public static void saveAll() throws SQLException{

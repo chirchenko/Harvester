@@ -1,0 +1,14 @@
+INFO LogoWindow               Starting application
+INFO DBHelper                 Checking database
+INFO DBHelper                 Attempting to connect: jdbc:sqlite:database.db
+INFO DBHelper                 Database exists. Connecting...
+INFO DBHelper                 Validating schema
+INFO LogoWindow               Loading dataase objects
+INFO Points                   Loading Points...
+INFO Points                   	Loaded 17 points
+INFO Machinery                Loading Machinery...
+INFO Machinery                	Loaded 5 machines
+INFO Fields                   Loading Fields...
+INFO Fields                   	Loaded 3 fields
+INFO LogoWindow               Application data ready
+INFO LogoWindow               Developed by Oleksii Polishchuk

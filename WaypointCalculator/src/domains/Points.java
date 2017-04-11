@@ -46,7 +46,8 @@ public class Points {
 		
 	}
 	
-	public static void loadAll(){
+	public static boolean loadAll(){
+		logger.info("Loading Points...");
 		points = new ArrayList<>();
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, FIELD_ID, SEQ, LAT, LON FROM %s", TABLE_NAME), null);
 		try {
@@ -55,7 +56,10 @@ public class Points {
 			}
 		} catch (SQLException e) {
 			logger.debug(e.getMessage());
+			return false;
 		}
+		logger.info(String.format("\tLoaded %d points", points.size()));
+		return true;		
 	}
 	
 	public static void saveAll() throws SQLException{

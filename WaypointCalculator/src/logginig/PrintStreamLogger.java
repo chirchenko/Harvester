@@ -4,10 +4,15 @@ import java.io.PrintStream;
 
 import logginig.Logger.LogLevel;
 
-public class StdOutLogger implements LogListener {
+public class PrintStreamLogger implements LogListener {
 	private int pad = 25;
-	private PrintStream ps = System.out;
-		
+	private PrintStream ps;
+	
+	public PrintStreamLogger(PrintStream ps) {
+		super();
+		this.ps = ps;
+	}
+
 	@Override
 	public void update(LogLevel level, Class<?> clazz, String message) {
 		if ((level.getMask() & Logger.getLogLevel()) > 0){

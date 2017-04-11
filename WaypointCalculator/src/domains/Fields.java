@@ -41,7 +41,9 @@ public class Fields {
 		
 	}
 	
-	public static void loadAll(){
+	public static boolean loadAll(){
+
+		logger.info("Loading Fields...");
 		fields = new ArrayList<>();
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME, POINTS FROM %s", TABLE_NAME), null);
 		try {
@@ -50,7 +52,10 @@ public class Fields {
 			}
 		} catch (SQLException e) {
 			logger.debug(e.getMessage());
+			return false;	
 		}
+		logger.info(String.format("\tLoaded %d fields", fields.size()));
+		return true;		
 	}
 	
 	public static void saveAll() throws SQLException{
