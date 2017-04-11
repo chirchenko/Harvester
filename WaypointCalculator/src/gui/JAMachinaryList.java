@@ -19,11 +19,10 @@ public class JAMachinaryList extends JPanel{
 	
 	public JAMachinaryList() {
 	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        setBorder(BorderFactory.createTitledBorder("Fields"));        
+        setBorder(BorderFactory.createTitledBorder("Harvesters"));        
 	    
 	    displayList = new JList<>(Machinery.getMachinery().toArray(new Machine[0]));
 	    
-	    displayList.setPreferredSize(new Dimension (300, 400));
 	    displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    displayList.setLayoutOrientation(JList.HORIZONTAL_WRAP);  
 	    

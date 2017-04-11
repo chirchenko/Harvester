@@ -27,7 +27,6 @@ public class JAFieldList extends JPanel{
 	    
 	    displayList = new JList<>(Fields.getFields().toArray(new Field[0]));
 	    
-	    displayList.setPreferredSize(new Dimension (300, 400));
 	    displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    displayList.setLayoutOrientation(JList.HORIZONTAL_WRAP);  
 	    

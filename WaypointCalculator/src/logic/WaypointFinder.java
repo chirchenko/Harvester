@@ -13,7 +13,6 @@ import geometry.Path;
 import geometry.Point;
 import geometry.Polygon;
 import geometry.Segment;
-import gui.MainWindow;
 import logginig.Logger;
 
 public class WaypointFinder {
@@ -31,7 +30,7 @@ public class WaypointFinder {
 
 	private List<Segment> formSegments;
 	
-	public WaypointFinder(List<Point> formPoints) {
+	public WaypointFinder(List<Point> formPoints, double width) {
 		
 		/*
 		 *1) Для кожноі точки formPoints[n] і formPoints[n+1] отримати відоізки які вони утворюють: formSegments 
@@ -53,8 +52,8 @@ public class WaypointFinder {
 		/*
 		 * 3) Поділити відрізок ovf на devidor, знайти координати точок поділу: devisionPoints[u-1]
 		 */
-		int sections = (int) (ovf.getLength() / MainWindow.workWidth);
-		if(ovf.getLength() % MainWindow.workWidth != 0){
+		int sections = (int) (ovf.getLength() / width);
+		if(ovf.getLength() % width != 0){
 			sections++;
 		}
 		List<Point> devisionPoints = ovf.devideSegment(sections);

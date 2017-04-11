@@ -11,7 +11,6 @@ import java.awt.geom.Path2D;
 import geometry.Path;
 import graphics.strokes.ShapeStroke;
 import gui.JACanvas;
-import gui.MainWindow;
 import tools.GoogleTools;
 
 @SuppressWarnings("serial")
@@ -35,7 +34,7 @@ public class JGPath extends Path2D.Float implements CanvasObject {
 			return;
 		}
 		
-		int brushSize = (int) (MainWindow.workWidth * GoogleTools.getMetersPerPixel(canvas.display.zoom - 1, canvas.display.map.center.getLatitude()));
+		int brushSize = (int) (canvas.display.machine.workWidth * GoogleTools.getMetersPerPixel(canvas.display.zoom - 1, canvas.display.map.center.getLatitude()));
 		
 		this.moveTo(canvas.getDisplayX(waypoints.getWaypoints().get(0).getLongitude()), 
 				canvas.getDisplayY(waypoints.getWaypoints().get(0).getLatitude()));

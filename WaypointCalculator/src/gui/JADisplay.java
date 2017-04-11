@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import domains.Fields.Field;
+import domains.Machinery.Machine;
 import geometry.Displayable;
 import graphics.CanvasObject;
 import graphics.Dimention;
@@ -18,8 +21,12 @@ import tools.GoogleTools;
 
 @SuppressWarnings("serial")
 public class JADisplay extends JPanel{
+	public JLabel label = new JLabel("Please select field");
+
 	private JACanvas canvas = new JACanvas(this);
 	public Map map = null;
+	public Field field;
+	public Machine machine;
 	
 	public int zoom = 0;
 	private java.util.Map<String, List<CanvasObject>> objectGroups;
@@ -29,11 +36,12 @@ public class JADisplay extends JPanel{
 		super(new BorderLayout());
 		setBorder(BorderFactory.createTitledBorder("Display"));
 		
-		JPanel container = new JPanel(new BorderLayout());
-		this.add(container);
-		container.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-				
+		JPanel container = new JPanel(new BorderLayout());		
+		container.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));				
 		container.add(canvas);
+				
+		this.add(container, BorderLayout.CENTER);
+		this.add(label, BorderLayout.SOUTH);
 		objectGroups = new HashMap<>();
 	}
 	

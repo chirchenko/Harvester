@@ -2,20 +2,21 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 
 import geometry.Displayable;
@@ -25,7 +26,7 @@ import logginig.Logger;
 import logic.WaypointFinder;
 
 @SuppressWarnings("serial")
-public class MainWindow  extends JFrame {
+public class MainWindow extends JFrame implements MouseListener{
 	protected static Logger logger = Logger.getLogger(MainWindow.class);
 	
 	final static int windowWidth = 1280;
@@ -33,8 +34,8 @@ public class MainWindow  extends JFrame {
 	
 	private JAFieldList fieldList;
 	private JAMachinaryList machineList;
-//	private JAInteger sections;
 	private JADisplay display;	
+	private JAConsole console;
 
 	private WaypointFinder wpf;
 	
@@ -43,10 +44,20 @@ public class MainWindow  extends JFrame {
 	public static final String GROUP_SEGMENT = "segment";
 	
 	public static double workWidth = 0;
-	public static List<Point> fieldPoints = null;
 	
 	public MainWindow() throws HeadlessException {
 		super();	
+		File iconFile = new File("resources/img/icon64.png");
+        if(iconFile.exists()){
+        	Image icon;
+			try {
+				icon = ImageIO.read(iconFile);
+	        	setIconImage(icon);    
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}    	        
+        }
+        
 		initUI();	
 	}
 
@@ -54,141 +65,123 @@ public class MainWindow  extends JFrame {
         setTitle("Waypoint Calculator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
-        JPanel generalPanel = new JPanel(new BorderLayout());	    
-        JPanel rightPanel = new JPanel();
+        JPanel windowContainer = new JPanel(new BorderLayout());	    
+        JPanel sidePanel = new JPanel(new BorderLayout());
         
-        JPanel plcHldrDisp = new JPanel(new BorderLayout());    
-        JPanel plcHldrConsole = new JPanel(new BorderLayout());    
-        
+        windowContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        sidePanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+                        
         fieldList = new JAFieldList();
         machineList = new JAMachinaryList();
-//        sections = new JAInteger("Work width");
         display = new JADisplay();    
+        console = new JAConsole();
         
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.setPreferredSize(new Dimension(300, 300));
-        rightPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        generalPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-    
-        plcHldrDisp.add(display);        
-        plcHldrConsole.add(new JAConsole());
+        enableComponents(machineList, false);       
 
-        
-        rightPanel.add(fieldList);
-        rightPanel.add(machineList);
-//        rightPanel.add(sections);
-        rightPanel.add(plcHldrConsole);        
-        generalPanel.add(plcHldrDisp);
-        
-        JButton flip = new JButton("Switch veiw");  
-        rightPanel.add(flip);
-        
-        JButton calculate = new JButton("Go");
-        rightPanel.add(calculate);
+        windowContainer.add(display);
+        JSplitPane mainSplitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, windowContainer, sidePanel);
+        mainSplitPanel.setResizeWeight(0.9);
 
-        this.add(generalPanel, BorderLayout.CENTER);
-        this.add(rightPanel, BorderLayout.EAST);
+        JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, fieldList, machineList);
+        JSplitPane splitPanel2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPanel, console);
         
-        calculate.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-//				workWidth = sections.getSections();
-				
-				logger.info("Invoking building waypoints"); 
-				if(workWidth == 0 || fieldPoints == null){
-					logger.info("Datasource not ready"); 
-					return;
-				}
-				logger.info("Datasource ready"); 
-				wpf = new WaypointFinder(fieldPoints);
-				
-				display.clearDisplayObject(GROUP_WP);
-
-				display.addDisplayObject(GROUP_WP, wpf.ovf, Color.RED);
-				
-				display.addDisplayObject(GROUP_WP, wpf.getWaypoints(), Color.RED);
-				display.addDisplayObject(GROUP_WP, wpf.getPath(), Color.YELLOW);
-				
-				display.render();
-			}
-		});
+        splitPanel.setResizeWeight(0.5);
+        splitPanel2.setResizeWeight(0.5);
+        sidePanel.add(splitPanel2, BorderLayout.CENTER);
         
-        fieldList.displayList.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e){
-                if(e.getClickCount()==2 && !e.isConsumed()){
-                	e.consume();
-                	
-                	fieldPoints = fieldList.getSelected().fieldPoints;
-                	
-                	Polygon polygon = new Polygon(fieldPoints);
-					display.setMapForArea(polygon.getDimention());
-					
-					display.getCanvas().clear();
-					
-					display.addDisplayObject(GROUP_FIELD, (ArrayList<Point>) polygon, new Color(0, 255, 0, 127));
-					display.addDisplayObject(GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
-					
-					display.getCanvas().render();
-                }
+        this.add(mainSplitPanel, BorderLayout.CENTER);   
+        
+        fieldList.displayList.addMouseListener(this);        
+        machineList.displayList.addMouseListener(this);
+	}
+	
+	private void fieldSelected() {
+		display.field = fieldList.getSelected();
+		    	
+    	Polygon polygon = new Polygon(display.field.fieldPoints);
+		display.setMapForArea(polygon.getDimention());
+		
+		display.getCanvas().clear();
+		
+		display.addDisplayObject(GROUP_FIELD, (ArrayList<Point>) polygon, new Color(0, 255, 0, 127));
+		display.addDisplayObject(GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
+		
+		display.getCanvas().render();
+		enableComponents(machineList, true);
+		display.label.setText("Please select harvester");
+		
+	}
+	
+	private void harvesterSelected(){
+		display.machine = machineList.getSelected(); 		
+		
+		logger.info("Invoking building waypoints"); 
+		if(display.machine.workWidth == 0 || display.field.fieldPoints == null){
+			logger.info("Datasource not ready"); 
+			return;
+		}
+		logger.info("Datasource ready"); 
+		wpf = new WaypointFinder(display.field.fieldPoints, display.machine.workWidth);
+		
+		display.clearDisplayObject(GROUP_WP);
+		
+		display.addDisplayObject(GROUP_WP, wpf.getWaypoints(), Color.RED);
+		display.addDisplayObject(GROUP_WP, wpf.getPath(), Color.YELLOW);		
+		display.render();
+		
+		double distance = wpf.getPath().getTotalDistance();
+		int turns = wpf.getPath().getWaypoints().size();
+		double fuelConsumption = display.machine.fuel;
+		double totalConsumption = fuelConsumption * distance / 1000;
+		display.label.setText(String.format("Overal distance: %.2f m, Number of turns: %d, Fuel consumption: %.2f litres(%.4f l/km)", distance, turns, totalConsumption, fuelConsumption));
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e){
+        if(e.getClickCount()==2 && !e.isConsumed()){
+        	e.consume();
+        	Object source = e.getSource();
+        	if(source == fieldList.displayList){
+        		fieldSelected();
+        	} else if(source == machineList.displayList){
+        		harvesterSelected();
+        	}
+        	
+        }
+    }
+	
+	public static void enableComponents(Container container, boolean enable) {
+        Component[] components = container.getComponents();
+        for (Component component : components) {
+            component.setEnabled(enable);
+            if (component instanceof Container) {
+                enableComponents((Container)component, enable);
             }
-        });
-        
-        machineList.displayList.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e){
-            	workWidth = machineList.getSelected().workWidth;   
-            }
-        });
-        
-//        pointList.getLoadPointsButton().addActionListener(new ActionListener(){  
-//        	@Override
-//	    	public void actionPerformed(ActionEvent e){
-//	    		JFileChooser fc = new JFileChooser(new File("."));
-//    	        int returnVal = fc.showOpenDialog(getParent());
-//
-//    	        if (returnVal == JFileChooser.APPROVE_OPTION) {
-//    	        	
-//    	        	logger.info("Opening: " + fc.getSelectedFile().getName() + ".");
-//    	        	
-//    	        	Polygon polygon;
-//    	        	try {
-//    	        		polygon = new Polygon(SemiFileDS.readFile(fc.getSelectedFile()));
-//					} catch (IOException e1) {
-//						logger.info(e1.getMessage());
-//						return;
-//					}       	        	
+        }
+    }
 
-//    	        } else {
-//    	        	logger.info("Open command cancelled by user." + "\n");
-//    	        }
-//		    }
-//		 });	
-        
-		flip.addActionListener(new ActionListener() {					
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				swipeWindows(plcHldrDisp, plcHldrConsole);
-				((JButton) e.getSource()).getParent().getParent().revalidate();
-				((JButton) e.getSource()).getParent().getParent().repaint();
-				display.getCanvas().render();
-			}
-		});
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	private void swipeWindows(JPanel plcHldrDisp, JPanel plcHldrConsole) {
-		if(plcHldrDisp.getComponentCount() == 1 && plcHldrConsole.getComponentCount() == 1){
-			JPanel component = (JPanel) plcHldrConsole.getComponents()[0];
-			JPanel componentOther = (JPanel) plcHldrDisp.getComponents()[0];
-			plcHldrConsole.removeAll();
-			plcHldrConsole.add(componentOther);
-			componentOther.setPreferredSize(new Dimension(componentOther.getParent().getPreferredSize().width - 10, 200));
-			
-			plcHldrDisp.removeAll();
-			plcHldrDisp.add(component);
-			component.setPreferredSize(new Dimension(component.getParent().getPreferredSize().width, component.getParent().getPreferredSize().height));
-		}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

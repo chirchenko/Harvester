@@ -55,6 +55,12 @@ public class Path implements Displayable{
 		return waypoints.containsAll(waypoints2);
 	}
 	
-	
+	public double getTotalDistance(){
+		double res = 0;
+		for(int i= 0; i < waypoints.size() - 2; i++){
+			res += waypoints.get(i).distanceTo(waypoints.get(i+1));
+		}
+		return res;
+	}
 	
 }
