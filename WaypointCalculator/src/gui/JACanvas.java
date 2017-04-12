@@ -52,7 +52,7 @@ public class JACanvas extends JPanel {
 		setLayout(new BorderLayout());
 		this.setBackground(Color.LIGHT_GRAY);
 
-		defaultImage = GoogleTools.getMapImage(null, null, 0, "./resources/img/blank.png");
+		defaultImage = GoogleTools.getMapImage(null, null, 0, "res/img/blank.png");
 		render();
 	}
 

@@ -52,7 +52,7 @@ public class MainWindow extends JFrame implements MouseListener{
 	
 	public MainWindow() throws HeadlessException {
 		super();	
-		File iconFile = new File("resources/img/icon64.png");
+		File iconFile = new File("res/img/icon64.png");
         if(iconFile.exists()){
         	Image icon;
 			try {

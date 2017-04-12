@@ -30,7 +30,7 @@ import logginig.Logger.LogLevel;
 @SuppressWarnings("serial")
 public class LogoWindow extends JWindow implements ActionListener {
 	
-	private String imagePath = "resources/img/logo.jpg";
+	private String imagePath = "res/img/logo.jpg";
 	private StatusLabel label;
 	
 	private static Logger logger = Logger.getLogger(LogoWindow.class);

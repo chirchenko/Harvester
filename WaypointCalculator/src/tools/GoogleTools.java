@@ -80,8 +80,11 @@ public class GoogleTools {
 	        		return ImageIO.read(new File(url));
 	        	}				
 			} catch (IOException e) {
-				System.err.println("Cannot read URL");
-				e.printStackTrace();
+				logger.info("Cannot read URL[" + new File(url) + "]: " + e.getMessage());
+				StackTraceElement[] stuck = e.getStackTrace();
+				for(int i = 0; i < stuck.length; i++){
+					logger.info("\tat " + stuck[i].toString());
+				}
 			}
 	    } else {
 	        System.err.println("Image URL is null");

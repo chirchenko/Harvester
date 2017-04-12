@@ -16,28 +16,11 @@ import logginig.Logger;
 public class DBHelper{
 	private static Connection connection = null;
 	private static Logger logger = Logger.getLogger(DBHelper.class);
-
+	
+	private final static String SCRIPT_DIR = "res/scripts";
 	private final static String SQL_DRIVER = "org.sqlite.JDBC";
 	private final static String SQL_DB_JDBC = "jdbc:sqlite:";
 	private final static String SQL_DB_NAME = "database.db";
-
-//	public static void main( String args[] )
-//	{
-//		try {
-//			if(!isDbInitailized()){
-//				System.out.println("Running DB initialization: " + executePlainUpdate(getSqlText("create-schema.sql")));
-//			}
-//			List<Object> parameters = new ArrayList<>();
-//	
-//			parameters.add("���� �456");
-//			parameters.add("15");
-//			executeUpdate("INSERT INTO FIELDS(NAME, AGE) VALUES(?, ?)", parameters.toArray());
-//			
-//		}catch ( Exception e ) {
-//			logger.info( e.getClass().getName() + ": " + e.getMessage() );
-//			return;
-//		}
-//	}
 
 	private static boolean isDbInitailized() {
 		Connection c = DBHelper.getConnection();		
@@ -151,10 +134,9 @@ public class DBHelper{
 	}
 
 	public static String getSqlText(String path) throws IOException {
-		String directoryPath= "sql-scripts/";
-		File file = new File(directoryPath + path);
+		File file = new File(SCRIPT_DIR + "/" + path);
 		if (!file.exists()){
-			throw new FileNotFoundException(String.format("Cannot find file %s at path %s", path, directoryPath));
+			throw new FileNotFoundException(String.format("Cannot find file %s at path %s", path, SCRIPT_DIR));
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -163,7 +145,7 @@ public class DBHelper{
 				sb.append(fr.readLine() + System.lineSeparator());
 			}
 		} catch (IOException e) {
-			throw new IOException(String.format("Cannot read file %s at path %s", path, directoryPath));
+			throw new IOException(String.format("Cannot read file %s at path %s", path, SCRIPT_DIR));
 		}
 		return sb.toString();
 	}

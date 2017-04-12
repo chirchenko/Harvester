@@ -32,7 +32,7 @@ public class Map{
 	 * @param polygon
 	 */
 	public Map(Dimention ovf, Dimension canvasSize, JADisplay display) {				
-		image = GoogleTools.getMapImage(ovf, canvasSize, display.zoom, "/img/blank.png");		
+		image = GoogleTools.getMapImage(ovf, canvasSize, display.zoom, "res/img/blank.png");		
 
 		Point center = ovf.getCenter(); 
 		if(image != null) {
