@@ -65,12 +65,9 @@ public class MainWindow extends JFrame implements MouseListener{
         
 		initUI();	
 	}
-
-	public void initUI() {    
-        setTitle("Waypoint Calculator");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-        JMenuBar menubar = new JMenuBar();
+	
+	public void initMenu(){
+		 JMenuBar menubar = new JMenuBar();
 
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
@@ -121,7 +118,13 @@ public class MainWindow extends JFrame implements MouseListener{
         menubar.add(help);
 
         setJMenuBar(menubar);
+	}
+
+	public void initUI() {    
+        setTitle("Waypoint Calculator");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         
+        initMenu();       
         JPanel windowContainer = new JPanel(new BorderLayout());	    
         JPanel sidePanel = new JPanel(new BorderLayout());
         

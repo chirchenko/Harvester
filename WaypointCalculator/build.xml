@@ -17,6 +17,14 @@
 	<path id="build-jar-classpath">
 		<fileset dir="${build.dir}/${lib.dir}" includes="*.jar" excludes="${name}.jar"/>
 	</path>
+	
+	<target name="zip" description="Archives distributive" depends="build-jar">
+		<zip destfile="${build.dir}/${name}.zip"
+			basedir="${build.dir}"
+		/>
+		
+		<delete includeemptydirs="true" dir="${build.dir}" excludes="*.zip" />	
+	</target>
 
 	<target name="build-jar" description="Pack into jar file" depends="copy-dependancies">
 		<mkdir dir="${build.dir}"/>
@@ -64,6 +72,6 @@
 	 
 	<target name="clean" description="Clean output directories">
 		<delete dir="${classes.dir}" failonerror="false" />
-		<delete dir="${build.dir}" failonerror="false" />
+		<delete dir="${build.dir}" failonerror="false" />		
 	</target>
 </project>

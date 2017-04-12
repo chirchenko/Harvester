@@ -62,12 +62,12 @@ public class LogoWindow extends JWindow implements ActionListener {
 		logger.info("Developed by Oleksii Polishchuk");
 		Logger.unsubscribe(label);
 		
-//		try {
-//			Thread.sleep(3000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		this.setVisible(false);
 		MainWindow mw= new MainWindow();
@@ -93,7 +93,6 @@ public class LogoWindow extends JWindow implements ActionListener {
 		
 		JButton button = new JButton("Abort");
 		label = new StatusLabel();
-		label.setBackground(Color.RED);
 		label.setPreferredSize(new Dimension((int)( width - button.getPreferredSize().getWidth()-10), (int )label.getPreferredSize().getHeight()));
 		panel.add(label);
 		panel.add(button);
@@ -125,7 +124,7 @@ public class LogoWindow extends JWindow implements ActionListener {
 
 		public StatusLabel() {
 			super("Component initialized");
-			this.setFont(new Font("Consolas", Font.PLAIN, 18));
+			this.setFont(new Font("Consolas", Font.PLAIN, 16));
 		}
 
 		@Override
