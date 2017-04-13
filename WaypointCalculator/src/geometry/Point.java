@@ -137,7 +137,7 @@ public class Point implements Displayable{
 	}
 	@Override
 	public String toString() {
-		return "Point [" + latitude + ", " + longitude + "]";
+		return "[" + latitude + ", " + longitude + "]";
 	}
 	
 	public static Point getCenterOfMass(Point ...points){

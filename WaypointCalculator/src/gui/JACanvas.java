@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import calculator.App;
 import geometry.Line;
 import geometry.Path;
 import geometry.Point;
@@ -52,7 +53,7 @@ public class JACanvas extends JPanel {
 		setLayout(new BorderLayout());
 		this.setBackground(Color.LIGHT_GRAY);
 
-		defaultImage = GoogleTools.getMapImage(null, null, 0, "res/img/blank.png");
+		defaultImage = GoogleTools.getMapImage(null, null, 0, App.APP_BLANK_MAP);
 		render();
 	}
 

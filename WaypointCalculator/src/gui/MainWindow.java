@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 
+import calculator.App;
 import geometry.Displayable;
 import geometry.Point;
 import geometry.Polygon;
@@ -43,6 +44,8 @@ public class MainWindow extends JFrame implements MouseListener{
 	private JAConsole console;
 
 	private WaypointFinder wpf;
+
+	private AboutWindow aboutFrame = new AboutWindow();
 	
 	public static final String GROUP_FIELD = "field";
 	public static final String GROUP_WP = "waypoints";
@@ -52,7 +55,7 @@ public class MainWindow extends JFrame implements MouseListener{
 	
 	public MainWindow() throws HeadlessException {
 		super();	
-		File iconFile = new File("res/img/icon64.png");
+		File iconFile = new File(App.APP_ICON_PATH);
         if(iconFile.exists()){
         	Image icon;
 			try {
@@ -156,8 +159,7 @@ public class MainWindow extends JFrame implements MouseListener{
 	}
 	
 	private void runAbout() {
-		// TODO Auto-generated method stub
-		
+		aboutFrame .display();
 	}
 
 	private void runExport() {

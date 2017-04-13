@@ -30,5 +30,7 @@ public class JAMachinaryList extends JPanel{
 	public Machine getSelected() {
 		return displayList.getSelectedValue();
 	}
+	
+	
 
 }

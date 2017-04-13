@@ -3,6 +3,7 @@ package graphics;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
+import calculator.App;
 import geometry.Point;
 import gui.JADisplay;
 import logginig.Logger;
@@ -15,16 +16,6 @@ public class Map{
 	Logger logging = Logger.getLogger(Map.class);
 	
 	public Point center;
-
-//	/**
-//	 * Creates blank map
-//	 */
-//	public Map() {
-//		this.SW = null;
-//		this.NE = null;
-//		
-//		defaultImage = createImageIcon(DEFAULTIMAGEPATH, "Default Image");
-//	}
 	
 	/**
 	 * Creates map to display polygon.
@@ -32,7 +23,7 @@ public class Map{
 	 * @param polygon
 	 */
 	public Map(Dimention ovf, Dimension canvasSize, JADisplay display) {				
-		image = GoogleTools.getMapImage(ovf, canvasSize, display.zoom, "res/img/blank.png");		
+		image = GoogleTools.getMapImage(ovf, canvasSize, display.zoom, App.APP_BLANK_MAP);		
 
 		Point center = ovf.getCenter(); 
 		if(image != null) {

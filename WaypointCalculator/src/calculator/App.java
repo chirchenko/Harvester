@@ -19,7 +19,11 @@ public class App{
 	public static DataSource ds;
 	public static int COORDINATE_PRECISION = 6;
 	public static Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    
+	public final static String APP_ICON_PATH = "res/img/icon64.png";
+	public static final String APP_BLANK_MAP = "res/img/blank.png";
+	public static final String APP_LOGO_IMAGE = "res/img/logo.jpg";
+	public static final boolean SHOW_POINT_TEXT = true;
+	
 	public static void main(String[] args) throws IOException{	
 		String logFileName = "log.txt";
 		File logFile = new File(logFileName);
