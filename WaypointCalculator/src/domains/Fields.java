@@ -1,5 +1,7 @@
 package domains;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,7 +25,18 @@ public class Fields {
 				
 		private Field load(ResultSet rs) throws SQLException{
 			this.id = rs.getInt("ID");
-			this.name = rs.getString("NAME");
+			byte[] b = rs.getBytes("NAME");
+						 
+//			for(String charset : Charset.availableCharsets().keySet()){
+//				logger.info(String.format("Charset: %s:\t\t\t%s", charset, new String(b , Charset.availableCharsets().get(charset))));
+//			}
+			
+			try {
+				this.name = new String(b, "UTF-8");
+				logger.info(this.name);
+			} catch (UnsupportedEncodingException e) {				
+				e.printStackTrace();
+			}
 			this.fieldPoints = Points.getPoints(rs.getInt("POINTS"));
 			return this;
 		}
