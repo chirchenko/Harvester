@@ -9,8 +9,8 @@ import domains.Fields.Field;
 @SuppressWarnings("serial")
 public class GuiFieldsPanel extends GuiAbstractPanel<Field> implements DataChangeListener{
 
-	public GuiFieldsPanel(String string) {
-		super(string);
+	public GuiFieldsPanel(String string, SelectedListener selectedListener) {
+		super(string, selectedListener);
 	}
 	
 	@Override
@@ -19,7 +19,6 @@ public class GuiFieldsPanel extends GuiAbstractPanel<Field> implements DataChang
 		for(Field m : Fields.getFields()){
 			model.addElement(m);
 		}	
-		
 	}
 
 }

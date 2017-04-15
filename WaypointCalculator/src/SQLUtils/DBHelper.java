@@ -11,7 +11,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.xml.bind.JAXBException;
+
+import calculator.App;
 import logginig.Logger;
+import tools.ExportImport;
 
 public class DBHelper{
 	private static Connection connection = null;
@@ -198,7 +202,7 @@ public class DBHelper{
 		}
 	}
 
-	public static boolean checkDB() {
+	public static void checkDB() throws SQLException, IOException {
 		logger.info("Checking database");
 		
 		logger.info("Attempting to connect: " + SQL_DB_JDBC + SQL_DB_NAME);
@@ -208,21 +212,27 @@ public class DBHelper{
 			logger.info("Database does not exists. Creating...");
 		}
 		if(DBHelper.getConnection() == null){
-			logger.info("Failed to create connection");
-			return false;
+			throw new SQLException("Failed to create connection");
 		}
 		
 		logger.info("Validating schema");
 		if(!isDbInitailized()){
 			logger.info("Database is not initialized. Running core script...");
-			try {
-				executePlainUpdate(getSqlText("create-schema.sql"));
-			} catch (IOException e) {
-				logger.info(e.getMessage());
-				return false;
-			}
+			executePlainUpdate(getSqlText("create-schema.sql"));
 		}
-		return true;		
-	}
-	
+		
+		logger.info("Importing preset");
+		String filePath = App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/initial.xml";
+		File file = new File(filePath);
+		if(file.exists()){
+			try {
+				ExportImport.importXML(file);
+			} catch (JAXBException e) {
+				logger.info("Failed to import preset " + file.getAbsolutePath());
+				logger.info(e);
+			}
+		}else{
+			logger.info("no preset found at path: " + file.getAbsolutePath());
+		}	
+	}	
 }

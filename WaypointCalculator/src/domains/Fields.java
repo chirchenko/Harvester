@@ -4,8 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
 import SQLUtils.DBHelper;
@@ -16,14 +17,17 @@ public class Fields {
 	private static Logger logger = Logger.getLogger(Fields.class);
 	public final static String TABLE_NAME = "FIELDS";
 
-	private static List<Field> fields;
+	private static List<Field> 	fields = new ArrayList<>();
 	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
-	public static class Field{
+	public static class Field implements ToolTipRecord{
 		
 		@XmlTransient
 		public int id;
 		public String name;
+		
+		@XmlElement(name="point")
+		@XmlElementWrapper
 		public List<Point> points;
 		
 		private Field load(ResultSet rs) throws SQLException{
@@ -36,7 +40,7 @@ public class Fields {
 		public void save() throws SQLException{
 			int idx = fields.indexOf(this);
 			if(idx == -1){
-				this.id = DBHelper.getNextSequence(Machinery.TABLE_NAME);
+				this.id = DBHelper.getNextSequence(Fields.TABLE_NAME);
 				fields.add(this);
 			}else{
 				this.id = fields.get(idx).id;
@@ -71,33 +75,27 @@ public class Fields {
 		listeners.add(listener);
 	}
 	
-	public static boolean loadAll(){
-
+	public static void loadAll() throws SQLException{
 		logger.info("Loading Fields...");
-		fields = new ArrayList<>();
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME FROM %s", TABLE_NAME), null);
-		try {
-			while(rs.next()){
-				fields.add(new Field().load(rs));
-			}
-		} catch (SQLException e) {
-			logger.debug(e.getMessage());
-			return false;	
+
+		fields.clear();
+		while(rs.next()){
+			fields.add(new Field().load(rs));
 		}
 		logger.info(String.format("\tLoaded %d fields", fields.size()));
 		notifyListeners();
-		return true;		
 	}
 	
 	public static void saveAll() throws SQLException{
-		for(Field f : fields){
-			List<Field> res =  fields.stream().filter(t -> t.id == f.id).collect(Collectors.toList());
+		for(Field o : fields){
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{o.id});
+			rs.next();
 			
-			if(res.isEmpty()){
-				f.save();
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?, ?)", TABLE_NAME), new Object[]{f.id, f.name });//insert
+			if(rs.getBoolean("EXIST")){
+				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.name, o.id });//update
 			} else {
-				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME), new Object[]{ f.name, f.id });//update
+				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?)", TABLE_NAME), new Object[]{ o.id, o.name });//insert
 			}
 		}
 	}

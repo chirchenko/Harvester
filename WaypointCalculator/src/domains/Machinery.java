@@ -17,7 +17,7 @@ public class Machinery {
 	private static List<Machine> machinery = new ArrayList<>();
 	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
-	public static class Machine{
+	public static class Machine implements ToolTipRecord{
 		@XmlTransient
 		public int id;
 		public String name;
@@ -59,6 +59,16 @@ public class Machinery {
 		}
 
 		@Override
+		public String getTooltip() {
+			return String.format("<html>"
+					+ "Name:\t%s<br>"
+					+ "Workwidth:\t%.2f<br>"
+					+ "Fuel:\t%.4f"
+					+ "</html>" 
+					, name, workWidth, fuel);
+		}
+
+		@Override
 		public String toString() {
 			return name + ", width=" + workWidth;
 		}		
@@ -68,22 +78,17 @@ public class Machinery {
 		listeners.add(listener);
 	}
 	
-	public static boolean loadAll(){
-
+	public static void loadAll() throws SQLException{
 		logger.info("Loading Machinery...");
-		machinery = new ArrayList<>();
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME, WORK_WIDTH, FUEL FROM %s", TABLE_NAME), null);
-		try {
-			while(rs.next()){
-				machinery.add(new Machine().load(rs));
-			}
-		} catch (SQLException e) {
-			logger.debug(e.getMessage());
-			return false;
+		
+		machinery.clear();
+		while(rs.next()){
+			machinery.add(new Machine().load(rs));
 		}
+		
 		logger.info(String.format("\tLoaded %d machines", machinery.size()));
-		notifyListeners();
-		return true;		
+		notifyListeners();	
 	}
 	
 	public static void saveAll() throws SQLException{

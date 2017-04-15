@@ -8,7 +8,6 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import datasource.DataSource;
 import gui.WindowLogo;
 import logginig.AbstractLogger.LogLevel;
 import logginig.Logger;
@@ -16,12 +15,14 @@ import logginig.PrintStreamLogger;
 
 public class App{
 	public static Logger logger = Logger.getLogger(App.class);
-	public static DataSource ds;
 	public static int COORDINATE_PRECISION = 6;
 	public static Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	public final static String APP_ICON_PATH = "res/img/icon64.png";
 	public static final String APP_BLANK_MAP = "res/img/blank.png";
 	public static final String APP_LOGO_IMAGE = "res/img/logo.jpg";
+	public static final String APP_EXPORT_DIR = "export";
+	public static final String APP_RES_DIR = "res";
+	
 	public static final boolean SHOW_POINT_TEXT = true;
 	
 	public static void main(String[] args) throws IOException{	

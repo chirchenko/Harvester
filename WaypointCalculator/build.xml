@@ -55,6 +55,7 @@
 			<fileset dir="">
 				<include name="${lib.dir}/**"/>
 				<include name="${resources.dir}/**"/>
+				<include name="${export.dir}/**"/>
 			</fileset>
 		</copy>
 		

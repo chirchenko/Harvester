@@ -12,8 +12,9 @@ import domains.Domains;
 import domains.Fields;
 import domains.Fields.Field;
 import domains.Machinery;
-import domains.Points;
 import domains.Machinery.Machine;
+import domains.Points;
+import domains.Points.Point;
 import logginig.Logger;
 
 public class ExportImport {
@@ -32,32 +33,33 @@ public class ExportImport {
 		}
 	}
 	
-	public static void importXML(File file) throws Exception {
-		try{	
-			Unmarshaller jaxbUnmarshaller = JAXBContext.newInstance(Domains.class).createUnmarshaller();
-			Domains domains = (Domains) jaxbUnmarshaller.unmarshal(file);
+	public static void importXML(File file) throws JAXBException, SQLException {	
+		Unmarshaller jaxbUnmarshaller = JAXBContext.newInstance(Domains.class).createUnmarshaller();
+		Domains domains = (Domains) jaxbUnmarshaller.unmarshal(file);
+		
+		if(domains.machines != null){
+			for(Machine m : domains.machines){
+				m.save();
+			}
+			Machinery.saveAll();
+		}
+		
+		if(domains.fields != null){
 			
-			if(domains.machine != null){
-				for(Machine m : domains.machine){
-					m.save();
+			for(Field f : domains.fields){
+				if(f.points == null){
+					logger.info("Field " + f + " has no points. Skipping");
+					continue;
+				};
+				f.save();
+				for(Point p : f.points){
+					p.fieldId = f.id;
+					p.save();
 				}
-				Machinery.saveAll();
-				Machinery.loadAll();
 			}
-			if(domains.field != null){
-				for(Field f : domains.field){
-					f.save();
-				}
-				
-				Fields.saveAll();
-				Points.saveAll();
-				
-				Points.loadAll();
-				Fields.loadAll();
-			}
-		}catch(JAXBException | SQLException e){
-			logger.info(e);
-			throw new Exception(e);
+			
+			Fields.saveAll();
+			Points.saveAll();
 		}
 	}
 }

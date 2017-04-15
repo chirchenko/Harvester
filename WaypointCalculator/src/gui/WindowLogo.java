@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -47,19 +48,23 @@ public class WindowLogo extends JWindow implements ActionListener {
 		//this.setVisible(true);		
 		this.setSize((int)width, (int)height);
 		
-		initApplication();
+		try {
+			initApplication();
+		} catch (SQLException | IOException e) {
+			logger.info("Application failed to start: " + e.getMessage());
+		}
 	}
 	
-	private void initApplication() {
+	private void initApplication() throws SQLException, IOException {
 		Logger.subscribe(label);
 		
 		logger.info("Starting application");
-		if(!DBHelper.checkDB())	return;
-		logger.info("Loading dataase objects");
-		
-		if(!Points.loadAll()) return;
-		if(!Machinery.loadAll()) return;
-		if(!Fields.loadAll()) return;
+		DBHelper.checkDB();
+
+		logger.info("Loading database");
+		Points.loadAll();
+		Machinery.loadAll();
+		Fields.loadAll();
 		
 		logger.info("Application data ready");
 		logger.info("Developed by Oleksii Polishchuk");

@@ -21,6 +21,11 @@ import tools.GoogleTools;
 
 @SuppressWarnings("serial")
 public class GuiDisplayPanel extends JPanel{
+
+	public static final String GROUP_FIELD = "field";
+	public static final String GROUP_WP = "waypoints";
+	public static final String GROUP_SEGMENT = "segment";
+	
 	public JLabel label = new JLabel("Please select field");
 
 	private GuiCanvasPanel canvas = new GuiCanvasPanel(this);

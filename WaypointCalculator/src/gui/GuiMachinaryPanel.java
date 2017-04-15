@@ -8,8 +8,8 @@ import domains.Machinery.Machine;
 @SuppressWarnings("serial")
 public class GuiMachinaryPanel extends GuiAbstractPanel<Machine>{
 
-	public GuiMachinaryPanel(String listName) {
-	    super(listName);
+	public GuiMachinaryPanel(String listName, SelectedListener selectedListener) {
+	    super(listName, selectedListener);
 	    listEnabled(false);
 	}
 
