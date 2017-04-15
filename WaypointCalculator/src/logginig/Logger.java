@@ -1,69 +1,46 @@
 package logginig;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-public class Logger {
-	private static int logLevel = 4;
+public class Logger extends AbstractLogger{
 	
-	private Class<?> clazz;
-	private static Set<LogListener> listeners = new HashSet<>();
-	
-	public static enum LogLevel{
-		INFO(1), TRACE(2), DEBUG(4);
-		private final int mask;
-
-	    private LogLevel(int mask)
-	    {
-	        this.mask = mask;
-	    }
-
-	    public int getMask()
-	    {
-	        return mask;
-	    }
-	}
-
 	private Logger(Class<?> clazz){
-		this.clazz = clazz;
+		super(clazz);
 	}
 	
 	public static Logger getLogger(Class<?> clazz){
 		return new Logger(clazz);
 	}
 	
-	public static void subscribe(LogListener listener){
-		listeners.add(listener);
-	}
-	
-	public static void unsubscribe(LogListener listener){
-		listeners.remove(listener);
-	}
-	
+	@Override
 	public void info(String message){
 		for(LogListener ll : listeners){
 			ll.update(LogLevel.INFO, clazz, message);
 		}
 	}
 	
+	@Override
 	public void debug(String message){
 		for(LogListener ll : listeners){
 			ll.update(LogLevel.DEBUG, clazz, message);
 		}
 	}
 	
+	@Override
 	public void trace(String message){
 		for(LogListener ll : listeners){
 			ll.update(LogLevel.TRACE, clazz, message);
 		}
 	}
-	
-	public static void setLogLevel(int mask) {
-		logLevel = mask;
-	}
-	
-	public static int getLogLevel() {
-		return logLevel;
+
+	public void info(Exception e) {
+		StringWriter writer = new StringWriter();
+		PrintWriter printWriter = new PrintWriter( writer );
+		e.printStackTrace( printWriter );
+		printWriter.flush();
+		
+		info(writer.toString());
 	}
 	
 }

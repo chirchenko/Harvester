@@ -1,8 +1,12 @@
 package geometry;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 import calculator.App;
+import domains.Points;
 import logginig.Logger;
 import tools.GoogleTools;
 
@@ -155,5 +159,13 @@ public class Point implements Displayable{
 		double length2 = this.distanceTo(array[1]);
 		
 		return (length1 > length2) ? array[1] : array[0];
+	}
+
+	public static List<Point> createCollection(Collection<domains.Points.Point> collection) {
+		List<Point> points = new ArrayList<>();
+		for(Points.Point p : collection){
+			points.add(new Point(p.lat, p.lon));
+		}
+		return points;
 	}
 }

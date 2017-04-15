@@ -6,17 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import SQLUtils.DBHelper;
 import logginig.Logger;
 
 public class Points {
-
-	final static String TABLE_NAME = "POINTS";
+	private static Logger logger = Logger.getLogger(Points.class);
+	public final static String TABLE_NAME = "POINTS";
+	
 	private static List<Point> points;
 	
-	private static Logger logger = Logger.getLogger(Points.class);
-	
 	public static class Point{
+		
+		@XmlTransient
 		public int id;
 		public int  fieldId;
 		public int seq;
@@ -32,7 +35,7 @@ public class Points {
 			return this;
 		}
 		
-		private void save(){
+		private void save() throws SQLException{
 			if(this.id == 0){
 				this.id = DBHelper.getNextSequence(Points.TABLE_NAME);
 			}			
@@ -41,9 +44,7 @@ public class Points {
 		@Override
 		public String toString() {
 			return String.format("#%d [%f; %f]", seq, lat, lon);
-		}
-		
-		
+		}		
 	}
 	
 	public static boolean loadAll(){
@@ -75,10 +76,16 @@ public class Points {
 		}
 	}
 	
-	public static List<geometry.Point> getPoints(int fieldId) {
+	public static List<geometry.Point> getGeoPoints(int fieldId) {
 		return points.stream()
 				.filter(t -> t.fieldId == fieldId)
 				.map(y -> new geometry.Point(y.lat, y.lon))
 				.collect(Collectors.toList());		
+	}
+	
+	public static List<Point> getPoints(int fieldId){
+		return points.stream()
+				.filter(t -> t.fieldId == fieldId)
+				.collect(Collectors.toList());
 	}
 }           		

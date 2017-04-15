@@ -20,10 +20,10 @@ import graphics.Map;
 import tools.GoogleTools;
 
 @SuppressWarnings("serial")
-public class JADisplay extends JPanel{
+public class GuiDisplayPanel extends JPanel{
 	public JLabel label = new JLabel("Please select field");
 
-	private JACanvas canvas = new JACanvas(this);
+	private GuiCanvasPanel canvas = new GuiCanvasPanel(this);
 	public Map map = null;
 	public Field field;
 	public Machine machine;
@@ -32,7 +32,7 @@ public class JADisplay extends JPanel{
 	private java.util.Map<String, List<CanvasObject>> objectGroups;
 	public double metersInPixel;
 	
-	public JADisplay() {
+	public GuiDisplayPanel() {
 		super(new BorderLayout());
 		setBorder(BorderFactory.createTitledBorder("Display"));
 		
@@ -77,7 +77,7 @@ public class JADisplay extends JPanel{
 		this.map = new Map(dimention, canvas.getSize(), this);
 	}
 
-	public JACanvas getCanvas() {
+	public GuiCanvasPanel getCanvas() {
 		return canvas;
 	}
 }

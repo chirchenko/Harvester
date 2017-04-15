@@ -1,6 +1,6 @@
 package logginig;
 
-import logginig.Logger.LogLevel;
+import logginig.AbstractLogger.LogLevel;
 
 public abstract class LogListenerImpl implements LogListener {
 	@Override

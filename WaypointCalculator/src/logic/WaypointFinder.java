@@ -30,12 +30,13 @@ public class WaypointFinder {
 
 	private List<Segment> formSegments;
 	
-	public WaypointFinder(List<Point> formPoints, double width) {
+	public WaypointFinder(List<domains.Points.Point> points, double width) {
 		
+		Polygon poly = new Polygon(points);
 		/*
 		 *1) Для кожноі точки formPoints[n] і formPoints[n+1] отримати відоізки які вони утворюють: formSegments 
 		 */
-		formSegments = new Polygon(formPoints).getSegments();
+		formSegments = poly.getSegments();
 		logging.info(String.format("---------------------------"));
 		
 		/*
@@ -46,8 +47,8 @@ public class WaypointFinder {
 		for(Segment s : formSegments){
 			if(longest == null || s.getLength() > longest.getLength()) longest = s; 
 		}
-		Line baseLine = longest.getLine().getPerprndicularAtPoint(new Polygon(formPoints).getDimention().getCenter());
-		ovf = baseLine.getProjection(formPoints.toArray(new Point[0]));
+		Line baseLine = longest.getLine().getPerprndicularAtPoint(poly.getDimention().getCenter());
+		ovf = baseLine.getProjection(poly.toArray(new Point[0]));
 		
 		/*
 		 * 3) Поділити відрізок ovf на devidor, знайти координати точок поділу: devisionPoints[u-1]

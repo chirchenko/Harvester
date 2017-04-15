@@ -10,22 +10,23 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import logginig.GuiConsoleLogger;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
-public class JAConsole extends JPanel implements ActionListener {
+public class GuiConsolePanel extends JPanel implements ActionListener {
 	
-	JTextArea output;        
+	public JTextArea output;        
     private JButton buttonExtend;
-    private ConsoleFrame consolFrame;
+    private WindowConsole consolFrame;
 
-    public JAConsole() {
+    public GuiConsolePanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Console"));            
 
         output = new JTextArea();
         buttonExtend = new JButton("Extend console");
-        consolFrame = new ConsoleFrame(this);
+        consolFrame = new WindowConsole(this);
         this.add(new JScrollPane(output), BorderLayout.CENTER);
         this.add(buttonExtend, BorderLayout.SOUTH);
         

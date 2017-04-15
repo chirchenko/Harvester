@@ -9,9 +9,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import datasource.DataSource;
-import gui.LogoWindow;
+import gui.WindowLogo;
+import logginig.AbstractLogger.LogLevel;
 import logginig.Logger;
-import logginig.Logger.LogLevel;
 import logginig.PrintStreamLogger;
 
 public class App{
@@ -28,7 +28,7 @@ public class App{
 		String logFileName = "log.txt";
 		File logFile = new File(logFileName);
 		if(logFile.exists()) logFile.delete();
-		logFile = new File(logFileName);		
+		logFile = new File(logFileName);	
 
 		Logger.setLogLevel(LogLevel.INFO.getMask() | LogLevel.DEBUG.getMask());
 		Logger.subscribe(new PrintStreamLogger(System.out));
@@ -42,7 +42,7 @@ public class App{
         	logger.info("\t" + url.getFile());
         }
 		
-		new LogoWindow();					
+		new WindowLogo();					
 	}
 
 }

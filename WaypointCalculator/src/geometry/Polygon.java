@@ -2,8 +2,10 @@ package geometry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import domains.Points;
 import graphics.Dimention;
 import logginig.Logger;
 
@@ -14,11 +16,10 @@ public class Polygon extends ArrayList<Point> implements Displayable{
 
 	public Polygon() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public Polygon(Collection<Point> c) {
-		super(c);
+	public Polygon(Collection<Points.Point> c) {
+		super(Point.createCollection(c));
 	}
 	
 	public Dimention getDimention(){

@@ -1,13 +1,13 @@
-package gui;
+package logginig;
 
 import java.awt.EventQueue;
 
-import logginig.LogListenerImpl;
+import gui.GuiConsolePanel;
 
 public class GuiConsoleLogger extends LogListenerImpl {
-	private JAConsole console;
+	private GuiConsolePanel console;
 	
-	public GuiConsoleLogger(JAConsole jaConsole) {
+	public GuiConsoleLogger(GuiConsolePanel jaConsole) {
 		this.console = jaConsole;
 	}
 

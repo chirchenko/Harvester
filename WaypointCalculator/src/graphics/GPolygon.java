@@ -3,23 +3,22 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.util.List;
 
 import geometry.Point;
-import gui.JACanvas;
+import geometry.Polygon;
+import gui.GuiCanvasPanel;
 
 @SuppressWarnings("serial")
-public class JGPolygon extends Polygon implements CanvasObject {
+public class GPolygon extends java.awt.Polygon implements CanvasObject {
 	private Color color;
-	private JACanvas canvas;
+	private GuiCanvasPanel canvas;
 	private geometry.Polygon polygon;
 	
-	public JGPolygon(List<Point> list, JACanvas canvas, Color color) {
+	public GPolygon(Polygon polygon, GuiCanvasPanel canvas, Color color) {
 		super();
 		this.color = color;
-		this.polygon = new geometry.Polygon(list);
+		this.polygon = polygon;
 		this.canvas = canvas;		 
 	}
 

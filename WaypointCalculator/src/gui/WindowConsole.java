@@ -10,10 +10,10 @@ import javax.swing.JTextArea;
 import calculator.App;
 
 @SuppressWarnings("serial")
-public class ConsoleFrame extends JFrame {
-	private JAConsole console;
+public class WindowConsole extends JFrame {
+	private GuiConsolePanel console;
 
-	public ConsoleFrame(JAConsole console) throws HeadlessException {
+	public WindowConsole(GuiConsolePanel console) throws HeadlessException {
 		super("Console");
 		this.console = console;
 		setSize(App.dim.width*2/4, App.dim.height*2/4);

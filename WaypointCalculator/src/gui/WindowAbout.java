@@ -22,9 +22,9 @@ import javax.swing.border.BevelBorder;
 import calculator.App;
 
 @SuppressWarnings("serial")
-public class AboutWindow extends JFrame {
+public class WindowAbout extends JFrame {
 
-	public AboutWindow() throws HeadlessException {
+	public WindowAbout() throws HeadlessException {
 		
 		setSize(App.dim.width*2/5, App.dim.height*2/5);
 		setLocationByPlatform(true);

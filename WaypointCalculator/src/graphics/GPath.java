@@ -10,17 +10,17 @@ import java.awt.geom.Path2D;
 
 import geometry.Path;
 import graphics.strokes.ShapeStroke;
-import gui.JACanvas;
+import gui.GuiCanvasPanel;
 import tools.GoogleTools;
 
 @SuppressWarnings("serial")
-public class JGPath extends Path2D.Float implements CanvasObject {
+public class GPath extends Path2D.Float implements CanvasObject {
 
-	private JACanvas canvas;
+	private GuiCanvasPanel canvas;
 	private Path waypoints;
 	private Color color;
 
-	public JGPath(Path waypoints, JACanvas jaCanvas, Color color) {
+	public GPath(Path waypoints, GuiCanvasPanel jaCanvas, Color color) {
 		super();
 		this.waypoints = waypoints;
 		this.canvas = jaCanvas;

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Event;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -15,37 +16,43 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.border.BevelBorder;
+import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.bind.JAXBException;
 
 import calculator.App;
+import domains.Fields;
+import domains.Machinery;
 import geometry.Displayable;
 import geometry.Point;
 import geometry.Polygon;
 import logginig.Logger;
 import logic.WaypointFinder;
+import tools.ExportImport;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame implements MouseListener{
-	protected static Logger logger = Logger.getLogger(MainWindow.class);
+public class WindowMain extends JFrame implements MouseListener{
+	protected static Logger logger = Logger.getLogger(WindowMain.class);
 	
 	final static int windowWidth = 1280;
 	final static int windowhHeight = 924;
 	
-	private JAFieldList fieldList;
-	private JAMachinaryList machineList;
-	private JADisplay display;	
-	private JAConsole console;
+	private GuiFieldsPanel fieldList;
+	private GuiMachinaryPanel machineList;
+	private GuiDisplayPanel display;	
+	private GuiConsolePanel console;
 
 	private WaypointFinder wpf;
 
-	private AboutWindow aboutFrame = new AboutWindow();
+	private WindowAbout aboutFrame = new WindowAbout();
 	
 	public static final String GROUP_FIELD = "field";
 	public static final String GROUP_WP = "waypoints";
@@ -53,7 +60,7 @@ public class MainWindow extends JFrame implements MouseListener{
 	
 	public static double workWidth = 0;
 	
-	public MainWindow() throws HeadlessException {
+	public WindowMain() throws HeadlessException {
 		super();	
 		File iconFile = new File(App.APP_ICON_PATH);
         if(iconFile.exists()){
@@ -76,34 +83,32 @@ public class MainWindow extends JFrame implements MouseListener{
         file.setMnemonic(KeyEvent.VK_F);
         
         JMenu tools = new JMenu("Tools");
-        file.setMnemonic(KeyEvent.VK_T);
+        tools.setMnemonic(KeyEvent.VK_T);
         
         JMenu help = new JMenu("Help");
-        file.setMnemonic(KeyEvent.VK_H);
+        help.setMnemonic(KeyEvent.VK_H);
 
-        JMenuItem eMenuItem = new JMenuItem("Exit");
-        eMenuItem.setMnemonic(KeyEvent.VK_X);
+        JMenuItem eMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
         eMenuItem.setToolTipText("Exit application");
         eMenuItem.addActionListener((ActionEvent event) -> {
             System.exit(0);
         });
         
-        JMenuItem importMenuItem = new JMenuItem("Import");
-        importMenuItem.setMnemonic(KeyEvent.VK_I);
+        JMenuItem importMenuItem = new JMenuItem("Import", KeyEvent.VK_I);
         importMenuItem.setToolTipText("Import from XML file");
+        importMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK));
         importMenuItem.addActionListener((ActionEvent event) -> {
             runImport();
         });
         
-        JMenuItem exportMenuItem = new JMenuItem("Export");
-        exportMenuItem.setMnemonic(KeyEvent.VK_E);
+        JMenuItem exportMenuItem = new JMenuItem("Export", KeyEvent.VK_E);
         exportMenuItem.setToolTipText("Export to XML file");
+        exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK));
         exportMenuItem.addActionListener((ActionEvent event) -> {
             runExport();
         });
         
-        JMenuItem aboutMenuItem = new JMenuItem("About");
-        aboutMenuItem.setMnemonic(KeyEvent.VK_A);
+        JMenuItem aboutMenuItem = new JMenuItem("About", KeyEvent.VK_A);
         aboutMenuItem.setToolTipText("Show information");
         aboutMenuItem.addActionListener((ActionEvent event) -> {
             runAbout();
@@ -130,16 +135,13 @@ public class MainWindow extends JFrame implements MouseListener{
         initMenu();       
         JPanel windowContainer = new JPanel(new BorderLayout());	    
         JPanel sidePanel = new JPanel(new BorderLayout());
+             
+        fieldList = new GuiFieldsPanel("Fields");
+        machineList = new GuiMachinaryPanel("Harvesters");
+        display = new GuiDisplayPanel();    
+        console = new GuiConsolePanel();
         
-        windowContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        sidePanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-                        
-        fieldList = new JAFieldList();
-        machineList = new JAMachinaryList();
-        display = new JADisplay();    
-        console = new JAConsole();
-        
-        enableComponents(machineList, false);       
+        machineList.listEnabled(false);        
 
         windowContainer.add(display);
         JSplitPane mainSplitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, windowContainer, sidePanel);
@@ -156,6 +158,9 @@ public class MainWindow extends JFrame implements MouseListener{
         
         fieldList.displayList.addMouseListener(this);        
         machineList.displayList.addMouseListener(this);
+        
+        Fields.addDataChangedListener(fieldList);
+        Machinery.addDataChangedListener(machineList);
 	}
 	
 	private void runAbout() {
@@ -163,19 +168,55 @@ public class MainWindow extends JFrame implements MouseListener{
 	}
 
 	private void runExport() {
-		// TODO Auto-generated method stub
+		JFileChooser fileChooser = new JFileChooser(new File("."));
+		fileChooser.setDialogTitle("Export to");
+		fileChooser.setSelectedFile(new File("export.xml"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			try {
+				ExportImport.exportXML(fileChooser.getSelectedFile());
+				JOptionPane.showMessageDialog(this,
+					    "Exported completed");
+			} catch (JAXBException e) {
+				JOptionPane.showMessageDialog(this,
+					    "Error occured while export:\n" + e.getCause().getMessage(),
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 
 	private void runImport() {
-		// TODO Auto-generated method stub
+		JFileChooser fileChooser = new JFileChooser(new File("."));
+		fileChooser.setDialogTitle("Import from");
+		fileChooser.setSelectedFile(new File("export.xml"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
+		logger.info("Import data");
+		if (fileChooser.showDialog(this, "Import") == JFileChooser.APPROVE_OPTION) {
+			try {
+				ExportImport.importXML(fileChooser.getSelectedFile());
+			
+				machineList.listEnabled(fieldList.getSelected() != null);
+				logger.info("Import successfull");
+				JOptionPane.showMessageDialog(this,
+					    "Import completed");
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this,
+					    "Error occured while import:\n" + e.getCause().getMessage(),
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		} else {
+			logger.info("Canceled import");
+		}
 	}
 
 	private void fieldSelected() {
 		display.field = fieldList.getSelected();
 		    	
-    	Polygon polygon = new Polygon(display.field.fieldPoints);
+    	Polygon polygon = new Polygon(display.field.points);
 		display.setMapForArea(polygon.getDimention());
 		
 		display.getCanvas().clear();
@@ -184,8 +225,7 @@ public class MainWindow extends JFrame implements MouseListener{
 		display.addDisplayObject(GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
 		
 		display.getCanvas().render();
-		enableComponents(machineList, true);
-		display.label.setText("Please select harvester");
+		machineList.listEnabled(true);
 		
 	}
 	
@@ -193,12 +233,12 @@ public class MainWindow extends JFrame implements MouseListener{
 		display.machine = machineList.getSelected(); 		
 		
 		logger.info("Invoking building waypoints"); 
-		if(display.machine.workWidth == 0 || display.field.fieldPoints == null){
+		if(display.machine == null || display.machine.workWidth == 0 || display.field.points == null){
 			logger.info("Datasource not ready"); 
 			return;
 		}
 		logger.info("Datasource ready"); 
-		wpf = new WaypointFinder(display.field.fieldPoints, display.machine.workWidth);
+		wpf = new WaypointFinder(display.field.points, display.machine.workWidth);
 		
 		display.clearDisplayObject(GROUP_WP);
 		

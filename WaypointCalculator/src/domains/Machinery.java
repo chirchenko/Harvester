@@ -4,19 +4,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 import SQLUtils.DBHelper;
 import logginig.Logger;
 
 public class Machinery {
-	
-	final static String TABLE_NAME = "MACHINERY";
-	private static List<Machine> machinery = new ArrayList<>();
-	
 	private static Logger logger = Logger.getLogger(Machinery.class);
+	public final static String TABLE_NAME = "MACHINERY";
+	
+	private static List<Machine> machinery = new ArrayList<>();
+	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
 	public static class Machine{
+		@XmlTransient
 		public int id;
 		public String name;
 		public double workWidth;
@@ -30,16 +32,40 @@ public class Machinery {
 			return this;
 		}
 		
-		private void save(){
-			if(this.id == 0){
+		public void save() throws SQLException{
+			int idx = machinery.indexOf(this);
+			if(idx == -1){
 				this.id = DBHelper.getNextSequence(Machinery.TABLE_NAME);
-			}			
-		}	
-		
+				machinery.add(this);
+			}else{
+				this.id = machinery.get(idx).id;
+				machinery.set(idx, this);
+			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Machine other = (Machine) obj;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			return true;
+		}
+
 		@Override
 		public String toString() {
 			return name + ", width=" + workWidth;
 		}		
+	}
+	
+	public static void addDataChangedListener(DataChangeListener listener){
+		listeners.add(listener);
 	}
 	
 	public static boolean loadAll(){
@@ -56,21 +82,29 @@ public class Machinery {
 			return false;
 		}
 		logger.info(String.format("\tLoaded %d machines", machinery.size()));
+		notifyListeners();
 		return true;		
 	}
 	
 	public static void saveAll() throws SQLException{
 		for(Machine o : machinery){
-			List<Machine> res =  machinery.stream().filter(t -> t.id == o.id).collect(Collectors.toList());
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{o.id});
+			rs.next();
 			
-			if(res.isEmpty()){
-				o.save();
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME, WORK_WIDTH, FUEL) VALUES (?, ?, ?, ?, ?)", TABLE_NAME), new Object[]{o.id, o.name, o.workWidth, o.fuel });//insert
-			} else {
+			if(rs.getBoolean("EXIST")){
 				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ?, WORK_WIDTH = ?, FUEL = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.name, o.workWidth, o.fuel, o.id });//update
+			} else {
+				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME, WORK_WIDTH, FUEL) VALUES (?, ?, ?, ?)", TABLE_NAME), new Object[]{o.id, o.name, o.workWidth, o.fuel });//insert
 			}
 		}
 	}
+	
+	private static void notifyListeners() {
+		for(DataChangeListener l : listeners){
+			l.dataChanged();
+		}
+	}
+
 	public static List<Machine> getMachinery() {
 		return machinery;
 	}

@@ -23,25 +23,28 @@ import calculator.App;
 import domains.Fields;
 import domains.Machinery;
 import domains.Points;
+import logginig.AbstractLogger.LogLevel;
 import logginig.LogListener;
 import logginig.Logger;
-import logginig.Logger.LogLevel;
 
 @SuppressWarnings("serial")
-public class LogoWindow extends JWindow implements ActionListener {
-	
+public class WindowLogo extends JWindow implements ActionListener {
 	private String imagePath = App.APP_LOGO_IMAGE;
 	private StatusLabel label;
 	
-	private static Logger logger = Logger.getLogger(LogoWindow.class);
+	private static Logger logger = Logger.getLogger(WindowLogo.class);
 	
-	public LogoWindow(){
+	public WindowLogo(){
+		if(new File("database.db").exists()){
+			new File("database.db").delete();
+		}
+
 		int width = App.dim.width*2/5;
 		int height = App.dim.height*2/5;
 		
 		initIface(width, height);		
 		this.setLocation((App.dim.width/2) - width/2, (App.dim.height/2) - height/2);
-		this.setVisible(true);		
+		//this.setVisible(true);		
 		this.setSize((int)width, (int)height);
 		
 		initApplication();
@@ -70,7 +73,7 @@ public class LogoWindow extends JWindow implements ActionListener {
 //		}
 		
 		this.setVisible(false);
-		MainWindow mw= new MainWindow();
+		WindowMain mw= new WindowMain();
 		mw.setSize(App.dim.width*3/4, App.dim.height*3/4);
 		mw.setLocationByPlatform(true);
 		EventQueue.invokeLater(() -> {

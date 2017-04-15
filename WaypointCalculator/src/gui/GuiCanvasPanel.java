@@ -19,17 +19,17 @@ import geometry.Polygon;
 import geometry.Segment;
 import graphics.CanvasObject;
 import graphics.Dimention;
-import graphics.JGLine;
-import graphics.JGPath;
-import graphics.JGPoint;
-import graphics.JGPolygon;
-import graphics.JGSegment;
+import graphics.GLine;
+import graphics.GPath;
+import graphics.GPoint;
+import graphics.GPolygon;
+import graphics.GSegment;
 import logginig.Logger;
 import tools.GoogleTools;
 
 @SuppressWarnings("serial")
-public class JACanvas extends JPanel {
-	Logger logger = Logger.getLogger(JACanvas.class);
+public class GuiCanvasPanel extends JPanel {
+	Logger logger = Logger.getLogger(GuiCanvasPanel.class);
 	
 	final static BasicStroke stroke = new BasicStroke(2.0f);
 	private List<CanvasObject> objects = new ArrayList<>();
@@ -37,7 +37,7 @@ public class JACanvas extends JPanel {
 	
 	int imageTopLeftX = 0;
 	int imageTopLeftY = 0;
-	public JADisplay display;
+	public GuiDisplayPanel display;
 	
 	public static enum CanvasElements{
 		Point,
@@ -47,7 +47,7 @@ public class JACanvas extends JPanel {
 		Path
 	}; 
 	
-	public JACanvas(JADisplay display) {
+	public GuiCanvasPanel(GuiDisplayPanel display) {
 		super();
 		this.display = display;
 		setLayout(new BorderLayout());
@@ -93,15 +93,15 @@ public class JACanvas extends JPanel {
 		
 		switch (co) {
 		case Point:
-			return new JGPoint((Point) obj, this, color);
+			return new GPoint((Point) obj, this, color);
 		case Line:
-			return new JGLine((Line) obj, this, color);
+			return new GLine((Line) obj, this, color);
 		case Segment:
-			return new JGSegment((Segment) obj, this, color);
+			return new GSegment((Segment) obj, this, color);
 		case Polygon:
-			return new JGPolygon((Polygon) obj, this, color);
+			return new GPolygon((Polygon) obj, this, color);
 		case Path:
-			return new JGPath((Path) obj, this, color);
+			return new GPath((Path) obj, this, color);
 		default:
 			return null;
 		}		

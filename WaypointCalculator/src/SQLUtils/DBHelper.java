@@ -57,7 +57,7 @@ public class DBHelper{
 		return res;
 	}
 
-	public static int executeUpdate(String sqlText, Object[] parameters) {
+	public static int executeUpdate(String sqlText, Object[] parameters) throws SQLException {
 		PreparedStatement stmt = null;
 		Connection c = DBHelper.getConnection();
 		int res = 0;
@@ -76,9 +76,8 @@ public class DBHelper{
 				logger.info("Database is not openned");
 			}
 			logger.info("Error while executing statement: \n" + sqlText);
-			e.printStackTrace();	
-			rollback();			
-			
+			logger.info(e);
+			throw e;
 		}
 		return res;
 	}
@@ -150,23 +149,24 @@ public class DBHelper{
 		return sb.toString();
 	}
 
-	public static int getCurrentSequence(String tableName) {
+	public static int getCurrentSequence(String tableName) throws SQLException {
 		int res = -1;
 		Connection conn = getConnection();
 		try {
 			Statement stmt= conn.createStatement();
 			ResultSet rs = stmt.executeQuery(String.format("SELECT VAL as SEQ FROM DB_INFO WHERE NAME = '%s_SEQUENCE'", tableName));
-			res = rs.getInt("SEQ");			
+			res = rs.getInt("SEQ");
 		} catch (SQLException e) {
-			logger.debug("Cannot get sequence for table " + tableName);
+			logger.info("Cannot get sequence for table " + tableName);
+			throw e;
 		}
 		
 		return res;
 	}
 	
-	public static int getNextSequence(String tableName) {
+	public static int getNextSequence(String tableName) throws SQLException {
 		int res = getCurrentSequence(tableName);
-		if(res == -1) return -1;
+		if(res == -1) throw new SQLException("Impossible sequence value -1");
 		res++;
 		Connection conn = getConnection();
 		try {
@@ -175,6 +175,8 @@ public class DBHelper{
 			commit();
 		} catch (SQLException e) {
 			logger.debug("Cannot get sequence for table " + tableName);
+			rollback();
+			throw e;
 		}
 		
 		return res;

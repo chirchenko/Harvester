@@ -9,16 +9,16 @@ import java.awt.geom.Line2D;
 
 import geometry.Line;
 import geometry.Segment;
-import gui.JACanvas;
+import gui.GuiCanvasPanel;
 
 @SuppressWarnings("serial")
-public class JGLine  extends Line2D.Float implements CanvasObject {
+public class GLine  extends Line2D.Float implements CanvasObject {
 	private Color color;
 	private int size = 1;
-	private JACanvas canvas;
+	private GuiCanvasPanel canvas;
 	private Line line;
 	
-	public JGLine(Line line, JACanvas canvas, Color color) {
+	public GLine(Line line, GuiCanvasPanel canvas, Color color) {
 		super();
 		this.line = line;
 		this.color = color;
