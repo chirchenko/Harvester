@@ -1,39 +1,55 @@
 package gui;
 
-import java.awt.LayoutManager;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import domains.DataChangeListener;
+import domains.Fields.Field;
 import domains.ToolTipRecord;
 
 @SuppressWarnings("serial")
 public abstract class GuiAbstractPanel<T> extends JPanel 
 							implements DataChangeListener, MouseListener{
+
+	private SelectedListener selectedListener;
 	
 	public interface SelectedListener {
 		public void onDoubleClick();
 	}
 	
-	private SelectedListener selectedListener;
+	public GuiEntityDialog<Field> entityDialog;
 	public JList<T> displayList;
-	protected JScrollPane scrollPane;
+	
+	protected JButton buttonAdd;
+	protected JButton buttonRemove;
+	protected JButton buttonModify;
 
 	public GuiAbstractPanel(String listName, SelectedListener selectedListener) {
 		super();
 		this.selectedListener = selectedListener;
-		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createTitledBorder(listName));
         
+        /*
+         * Tooltips are configured to be shown for entities with type
+         * ToolTipRecord
+         */
 		this.displayList = new JList<T>(){
+			
 			public String getToolTipText(MouseEvent evt) {
 		        int index = locationToIndex(evt.getPoint());
 		        if(index < 0) return null;
@@ -43,30 +59,67 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 		        }
 		        return item.toString();
 		      }
+			
 		};
-		this.displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		this.displayList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	    this.displayList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 	    this.displayList.setModel(new DefaultListModel<T>());	    
 	    this.displayList.addMouseListener(this);
 	    
-        this.scrollPane = new JScrollPane(displayList
+        JScrollPane scrollPane = new JScrollPane(displayList
         		, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
         		, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	    this.add(scrollPane);
+	    this.add(scrollPane, BorderLayout.CENTER);
+	    
+	    /*
+	     * 3-button section below list
+	     */
+	    buttonAdd = new JButton("Add");
+	    buttonRemove = new JButton("Remove");
+	    buttonModify = new JButton("Edit");
+	    
+	    buttonAdd.setEnabled(true);
+	    buttonRemove.setEnabled(false);
+	    buttonModify.setEnabled(false);
+
+	    /*
+	     * button click calls edit dialog
+	     */
+		buttonAdd.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				entityDialog.showDialog();
+			}
+		});
+	    
+	    /*
+	     * Button are enabled/disabled depending on selection
+	     */
+	    displayList.getSelectionModel().addListSelectionListener(e -> {
+	    	
+	    	buttonAdd.setEnabled(true);
+    		buttonRemove.setEnabled(!displayList.isSelectionEmpty());
+	    	buttonModify.setEnabled(!displayList.isSelectionEmpty()
+	    			&& displayList.getSelectedValuesList().size() == 1);
+	    });
+	    
+	    JPanel managePanel = new JPanel(new GridBagLayout());
+	    GridBagConstraints c = new GridBagConstraints();
+	    c.fill = GridBagConstraints.HORIZONTAL;
+	    c.weightx = 1;
+	    managePanel.add(buttonAdd, c);
+	    managePanel.add(buttonRemove, c);
+	    managePanel.add(buttonModify, c);
+
+	    this.add(managePanel, BorderLayout.SOUTH);
 	    
 	    dataChanged();
 	}
 
 	public abstract void loadData(DefaultListModel<T> model);
-
-	public GuiAbstractPanel(boolean isDoubleBuffered) {
-		super(isDoubleBuffered);
-	}
-
-	public GuiAbstractPanel(LayoutManager layout, boolean isDoubleBuffered) {
-		super(layout, isDoubleBuffered);
-	}
-
+	
 	public T getSelected() {
 		return displayList.getSelectedValue();
 	}
@@ -79,16 +132,24 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 	}
 
 	public void listEnabled(boolean enabled) {
-		scrollPane.setEnabled(enabled);
-		displayList.setEnabled(enabled);
+		for(Component c : getComponents()){
+			c.setEnabled(enabled);
+			for(Component s : getComponents()){
+				s.setEnabled(enabled);
+			}
+		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(this.displayList.getModel().getSize() > 0 && e.getClickCount()==2 && !e.isConsumed()){
-        	e.consume();
-        	selectedListener.onDoubleClick();
-        }
+		if(this.displayList.isEnabled()){
+			if(this.displayList.getModel().getSize() > 0 
+					&& e.getClickCount()==2 && !e.isConsumed()){
+		    	e.consume();
+		    	selectedListener.onDoubleClick();
+		    }
+		}
+				
 	}
 
 	@Override

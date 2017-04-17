@@ -66,10 +66,15 @@ public class WindowMain extends JFrame{
 			}    	        
         }
         
-		initUI();	
+		try {
+			initUI();
+		} catch (InstantiationException | IllegalAccessException e) {
+			logger.info("Failed to initialize interface");
+			logger.info(e);
+		}	
 	}
 
-	public void initUI() {    
+	public void initUI() throws InstantiationException, IllegalAccessException {    
         setTitle("Waypoint Calculator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
@@ -141,6 +146,58 @@ public class WindowMain extends JFrame{
         Fields.addDataChangedListener(fieldList);
         Machinery.addDataChangedListener(machineList);
 	}
+	private void runAbout() {
+		aboutFrame .display();
+	}
+
+	private void runExport() {
+		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
+		fileChooser.setDialogTitle("Export to");
+		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
+		
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			try {
+				ExportImport.exportXML(fileChooser.getSelectedFile());
+				JOptionPane.showMessageDialog(this,
+					    "Exported completed");
+			} catch (JAXBException e) {
+				JOptionPane.showMessageDialog(this,
+					    "Error occured while export:\n" + e.getCause().getMessage(),
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	private void runImport() {
+		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
+		fileChooser.setDialogTitle("Import from");
+		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
+		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
+		
+		logger.info("Import data");
+		if (fileChooser.showDialog(this, "Import") == JFileChooser.APPROVE_OPTION) {
+			try {
+				ExportImport.importXML(fileChooser.getSelectedFile());
+				Machinery.loadAll();
+				Points.loadAll();
+				Fields.loadAll();
+				
+				machineList.listEnabled(display.field != null);
+				logger.info("Import successfull");
+				JOptionPane.showMessageDialog(this,
+					    "Import completed");
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this,
+					    "Error occured while import:\n" + e.getCause().getMessage(),
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		} else {
+			logger.info("Canceled import");
+		}
+	}
 	
 	public void initMenu(){
 		 JMenuBar menubar = new JMenuBar();
@@ -192,59 +249,6 @@ public class WindowMain extends JFrame{
        menubar.add(help);
 
        setJMenuBar(menubar);
-	}
-	
-	private void runAbout() {
-		aboutFrame .display();
-	}
-
-	private void runExport() {
-		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
-		fileChooser.setDialogTitle("Export to");
-		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
-		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
-		
-		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-			try {
-				ExportImport.exportXML(fileChooser.getSelectedFile());
-				JOptionPane.showMessageDialog(this,
-					    "Exported completed");
-			} catch (JAXBException e) {
-				JOptionPane.showMessageDialog(this,
-					    "Error occured while export:\n" + e.getCause().getMessage(),
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-			}
-		}
-	}
-
-	private void runImport() {
-		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
-		fileChooser.setDialogTitle("Import from");
-		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
-		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
-		
-		logger.info("Import data");
-		if (fileChooser.showDialog(this, "Import") == JFileChooser.APPROVE_OPTION) {
-			try {
-				ExportImport.importXML(fileChooser.getSelectedFile());
-				Machinery.loadAll();
-				Points.loadAll();
-				Fields.loadAll();
-				
-				machineList.listEnabled(fieldList.getSelected() != null);
-				logger.info("Import successfull");
-				JOptionPane.showMessageDialog(this,
-					    "Import completed");
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this,
-					    "Error occured while import:\n" + e.getCause().getMessage(),
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-			}
-		} else {
-			logger.info("Canceled import");
-		}
 	}
 }
 

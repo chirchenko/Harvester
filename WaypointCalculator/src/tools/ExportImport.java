@@ -39,6 +39,7 @@ public class ExportImport {
 		
 		if(domains.machines != null){
 			for(Machine m : domains.machines){
+				logger.info("\tSaving " + m);
 				m.save();
 			}
 			Machinery.saveAll();
@@ -51,6 +52,7 @@ public class ExportImport {
 					logger.info("Field " + f + " has no points. Skipping");
 					continue;
 				};
+				logger.info("\tSaving " + f);
 				f.save();
 				for(Point p : f.points){
 					p.fieldId = f.id;

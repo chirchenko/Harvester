@@ -36,17 +36,14 @@ public class WindowLogo extends JWindow implements ActionListener {
 	private static Logger logger = Logger.getLogger(WindowLogo.class);
 	
 	public WindowLogo(){
-		if(new File("database.db").exists()){
-			new File("database.db").delete();
-		}
 
 		int width = App.dim.width*2/5;
 		int height = App.dim.height*2/5;
 		
 		initIface(width, height);		
-		this.setLocation((App.dim.width/2) - width/2, (App.dim.height/2) - height/2);
-		//this.setVisible(true);		
+		this.setLocation((App.dim.width/2) - width/2, (App.dim.height/2) - height/2);		
 		this.setSize((int)width, (int)height);
+		this.setVisible(true);
 		
 		try {
 			initApplication();

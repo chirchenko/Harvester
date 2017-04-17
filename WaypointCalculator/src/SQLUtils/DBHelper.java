@@ -219,20 +219,20 @@ public class DBHelper{
 		if(!isDbInitailized()){
 			logger.info("Database is not initialized. Running core script...");
 			executePlainUpdate(getSqlText("create-schema.sql"));
+			
+			logger.info("Importing preset");
+			String filePath = App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/initial.xml";
+			File file = new File(filePath);
+			if(file.exists()){
+				try {
+					ExportImport.importXML(file);
+				} catch (JAXBException e) {
+					logger.info("Failed to import preset " + file.getAbsolutePath());
+					logger.info(e);
+				}
+			}else{
+				logger.info("no preset found at path: " + file.getAbsolutePath());
+			}	
 		}
-		
-		logger.info("Importing preset");
-		String filePath = App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/initial.xml";
-		File file = new File(filePath);
-		if(file.exists()){
-			try {
-				ExportImport.importXML(file);
-			} catch (JAXBException e) {
-				logger.info("Failed to import preset " + file.getAbsolutePath());
-				logger.info(e);
-			}
-		}else{
-			logger.info("no preset found at path: " + file.getAbsolutePath());
-		}	
 	}	
 }
