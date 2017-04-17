@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -90,7 +91,13 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				entityDialog.showDialog();
+				entityDialog.showDialog(null);
+				try {
+					entityDialog.getEntity().save();
+				} catch (SQLException e1) {
+					//logger.info("Saving " + entity.toSttring());
+					e1.printStackTrace();
+				}
 			}
 		});
 	    

@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -59,17 +58,11 @@ public abstract class GuiEntityDialog<T> extends JPanel implements ActionListene
 
 	public abstract JPanel getEntityPanel();
     
-    public int showDialog(){
+    public int showDialog(T entity){
+    	this.entity = entity;
+    	
     	if (dialog == null) {
-            if (owner == null) {
-                dialog = new LocalDialog();
-            } else if (owner instanceof Frame) {
-                dialog = new LocalDialog((Frame) owner);
-            } else if (owner instanceof Dialog) {
-                dialog = new LocalDialog((Dialog) owner);
-            } else {
-                dialog = new LocalDialog();
-            }
+    		dialog = new LocalDialog((Frame) owner);
         }
         dialog.setModal(true);
         dialog.setTitle(this.title);
@@ -77,6 +70,7 @@ public abstract class GuiEntityDialog<T> extends JPanel implements ActionListene
         dialog.getRootPane().setLayout(new BorderLayout());
         dialog.getRootPane().add(getEntityPanel(), BorderLayout.CENTER);
         dialog.getRootPane().add(this, BorderLayout.SOUTH);
+        
         dialog.setMinimumSize(new Dimension(App.dim.width * 1 / 4, App.dim.height * 1 / 4));
         dialog.pack();
 
@@ -84,8 +78,8 @@ public abstract class GuiEntityDialog<T> extends JPanel implements ActionListene
         return option;
     }
     
-    public void setEntity(T entity){
-    	this.entity = entity;
+    public T getEntity(){
+    	return entity;
     }
     
     protected void clearDialog() {
@@ -98,13 +92,6 @@ public abstract class GuiEntityDialog<T> extends JPanel implements ActionListene
     }
 
     private class LocalDialog extends JDialog {
-        public LocalDialog() {
-            super();
-        }
-
-        public LocalDialog(Dialog owner) {
-            super(owner);
-        }
 
         public LocalDialog(Frame owner) {
             super(owner);
@@ -126,6 +113,7 @@ public abstract class GuiEntityDialog<T> extends JPanel implements ActionListene
     	}else if(e.getSource() == buttonCancel){
     		option = CANCEL_OPTION;
     	}
+    	clearDialog();
     }
     
 }
