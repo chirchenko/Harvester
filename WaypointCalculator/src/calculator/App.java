@@ -5,10 +5,11 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import gui.WindowLogo;
+import gui.window.WindowLogo;
 import logginig.AbstractLogger.LogLevel;
 import logginig.Logger;
 import logginig.PrintStreamLogger;
@@ -40,7 +41,13 @@ public class App{
 
         logger.info("Class-path:");
         for(URL url: urls){
-        	logger.info("\t" + url.getFile());
+        	String relative = "error while resolving path";
+			try {
+				relative = new File(".").toURI().relativize(url.toURI()).getPath();
+			} catch (URISyntaxException e) {
+				//am I bad person?
+			}	
+        	logger.info("\t" + relative);
         }
 		
 		new WindowLogo();					

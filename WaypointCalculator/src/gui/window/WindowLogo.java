@@ -1,4 +1,4 @@
-package gui;
+package gui.window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -19,12 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 
-import SQLUtils.DBHelper;
 import calculator.App;
 import domains.Fields;
 import domains.Machinery;
 import domains.Points;
 import logginig.AbstractLogger.LogLevel;
+import sqlutils.DBHelper;
 import logginig.LogListener;
 import logginig.Logger;
 

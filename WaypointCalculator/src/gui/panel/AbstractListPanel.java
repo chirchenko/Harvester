@@ -1,4 +1,4 @@
-package gui;
+package gui.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -23,13 +23,14 @@ import javax.swing.SwingUtilities;
 import domains.DataChangeListener;
 import domains.PersistentObject;
 import domains.ToolTipRecord;
+import gui.panel.dialog.GuiEntityDialog;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
-public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPanel 
+public abstract class AbstractListPanel<T extends PersistentObject> extends JPanel 
 							implements DataChangeListener, MouseListener{
 
-	private Logger logger = Logger.getLogger(GuiAbstractPanel.class);
+	private Logger logger = Logger.getLogger(AbstractListPanel.class);
 	
 	private SelectedListener selectedListener;
 	
@@ -38,7 +39,7 @@ public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPane
 	}
 	
 	protected T emptyEntity;
-	public GuiEntityDialog<T> entityDialog = null;
+	private GuiEntityDialog<T> entityDialog = null;
 	private JScrollPane scrollPane;
 	public JList<T> displayList;
 	
@@ -46,7 +47,7 @@ public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPane
 	protected JButton buttonRemove;
 	protected JButton buttonModify;
 
-	public GuiAbstractPanel(String listName, SelectedListener selectedListener, T emptyEntity) {
+	public AbstractListPanel(String listName, SelectedListener selectedListener, T emptyEntity) {
 		super();
 		this.selectedListener = selectedListener;
 		this.emptyEntity = emptyEntity;
@@ -56,6 +57,11 @@ public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPane
 		
 	    dataChanged();
 	}
+	
+	public abstract void loadData(DefaultListModel<T> model);
+	
+	public abstract GuiEntityDialog<T> assignDialog();
+	
 
 	private void initAbstractUI(String listName) {
 		this.setLayout(new BorderLayout());
@@ -161,10 +167,6 @@ public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPane
 	    this.add(managePanel, BorderLayout.SOUTH);
 	}
 
-	public abstract void loadData(DefaultListModel<T> model);
-	
-	public abstract GuiEntityDialog<T> assignDialog();
-	
 	public T getSelected() {
 		return displayList.getSelectedValue();
 	}

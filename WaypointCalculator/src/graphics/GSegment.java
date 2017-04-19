@@ -8,17 +8,17 @@ import java.awt.RenderingHints;
 import java.awt.geom.Line2D.Float;
 
 import geometry.Segment;
-import gui.GuiCanvasPanel;
+import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GSegment extends Float implements CanvasObject {
 	private Color color;
 	private int size = 2;
-	private GuiCanvasPanel canvas;
+	private CanvasPanel canvas;
 	private Segment segment;
 	
 	
-	public GSegment(Segment segment, GuiCanvasPanel canvas, Color color) {
+	public GSegment(Segment segment, CanvasPanel canvas, Color color) {
 		super();
 		this.segment = segment;
 		this.canvas = canvas;

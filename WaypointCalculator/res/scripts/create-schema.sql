@@ -25,7 +25,7 @@ CREATE TABLE POINTS
 	LAT			REAL    NOT NULL, 
 	LON 		REAL    NOT NULL);
 	
-insert into DB_INFO VALUES("DB schema name", "1.0.7", datetime('now'));
+insert into DB_INFO VALUES("DB schema name", "1.2", datetime('now'));
 insert into DB_INFO VALUES("FIELDS_SEQUENCE", "0", datetime('now'));
 insert into DB_INFO VALUES("MACHINERY_SEQUENCE", "0", datetime('now'));
 insert into DB_INFO VALUES("POINTS_SEQUENCE", "0", datetime('now'));

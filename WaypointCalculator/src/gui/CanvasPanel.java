@@ -25,11 +25,11 @@ import graphics.GPoint;
 import graphics.GPolygon;
 import graphics.GSegment;
 import logginig.Logger;
-import tools.GoogleTools;
+import tools.IOTools;
 
 @SuppressWarnings("serial")
-public class GuiCanvasPanel extends JPanel {
-	Logger logger = Logger.getLogger(GuiCanvasPanel.class);
+public class CanvasPanel extends JPanel {
+	Logger logger = Logger.getLogger(CanvasPanel.class);
 	
 	final static BasicStroke stroke = new BasicStroke(2.0f);
 	private List<CanvasObject> objects = new ArrayList<>();
@@ -37,7 +37,7 @@ public class GuiCanvasPanel extends JPanel {
 	
 	int imageTopLeftX = 0;
 	int imageTopLeftY = 0;
-	public GuiDisplayPanel display;
+	public DisplayPanel display;
 	
 	public static enum CanvasElements{
 		Point,
@@ -47,13 +47,13 @@ public class GuiCanvasPanel extends JPanel {
 		Path
 	}; 
 	
-	public GuiCanvasPanel(GuiDisplayPanel display) {
+	public CanvasPanel(DisplayPanel display) {
 		super();
 		this.display = display;
 		setLayout(new BorderLayout());
 		this.setBackground(Color.LIGHT_GRAY);
 
-		defaultImage = GoogleTools.getMapImage(null, null, 0, App.APP_BLANK_MAP);
+		defaultImage = IOTools.getMapImage("", null, null, 0, App.APP_BLANK_MAP);
 		render();
 	}
 

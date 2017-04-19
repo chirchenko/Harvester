@@ -1,4 +1,4 @@
-package gui;
+package gui.window;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
@@ -8,12 +8,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import calculator.App;
+import gui.ConsolePanel;
 
 @SuppressWarnings("serial")
 public class WindowConsole extends JFrame {
-	private GuiConsolePanel console;
+	private ConsolePanel console;
 
-	public WindowConsole(GuiConsolePanel console) throws HeadlessException {
+	public WindowConsole(ConsolePanel console) throws HeadlessException {
 		super("Console");
 		this.console = console;
 		setSize(App.dim.width*2/4, App.dim.height*2/4);

@@ -1,23 +1,14 @@
 package tools;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
-
 import geometry.Point;
-import graphics.Dimention;
 import logginig.Logger;
 
 public class GoogleTools {
 	public static Logger logger = Logger.getLogger(GoogleTools.class);
 	public final static int RADIUS = 6378137;
-	final static int GLOBE_WIDTH = 256; // a constant in Google's map projection
-	final static int ZOOM_MAX = 21;
-	final static String URL_PATTERN = "https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=%dx%d&scale=2&maptype=hybrid&format=jpg";
+	public final static int GLOBE_WIDTH = 256; // a constant in Google's map projection
+	public final static int ZOOM_MAX = 21;
+	public final static String URL_PATTERN = "https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=%dx%d&scale=2&maptype=hybrid&format=jpg";
 
 
 	public static int getBoundsZoomLevel(Point northeast,Point southwest, int width, int height) {
@@ -39,63 +30,9 @@ public class GoogleTools {
 	    return (Math.log(mapPx / worldPx / fraction) / LN2);
 	}	
 	
-	/**
-	 * Returns image of map which fits given polygon on canvas size. Or returns default image 
-	 * @param polygon
-	 * @param canvasSize
-	 * @param defaultPath
-	 * @return
-	 */
-	public static BufferedImage getMapImage(Dimention ovf, Dimension canvasSize, int zoom, String defaultPath) {
-		BufferedImage result = new BufferedImage(1240, 1240, BufferedImage.TYPE_INT_RGB);
-		BufferedImage img;
-		if(ovf == null || canvasSize == null) {				
-			img = readImageFromUrl(defaultPath);
-			result = (img == null) ? result : img; 
-		}else{
-			double lat = ovf.getCenter().getLatitude();
-	        double lon = ovf.getCenter().getLongitude();
-	        
-			int size_w = 620;
-			int size_h = 620;
-        
-        	String url = String.format(URL_PATTERN, lat, lon, zoom, size_w, size_h);
-        	img = readImageFromUrl(url);
-        	logger.info("Loaded map image from: " + url);
-        	
-        	result = (img == null) ? readImageFromUrl(defaultPath) :  img;	    			
-		}			
-
-		return result;
-	}
-	
-	/** Returns an ImageIcon, or null if the path was invalid. 
-	 * @throws IOException */
-	private static BufferedImage readImageFromUrl(String url){
-	    if (url != null) {
-	        try {
-	        	if(url.startsWith("http")){
-	        		return ImageIO.read(new URL(url));
-	        	}else{
-	        		return ImageIO.read(new File(url));
-	        	}				
-			} catch (IOException e) {
-				logger.info("Cannot read URL[" + new File(url) + "]: " + e.getMessage());
-				StackTraceElement[] stuck = e.getStackTrace();
-				for(int i = 0; i < stuck.length; i++){
-					logger.info("\tat " + stuck[i].toString());
-				}
-			}
-	    } else {
-	        System.err.println("Image URL is null");
-	    	return null;
-	    }
-		return null;
-	}
-	
 //	public static double getMetersPerPixel(int zoom, double latitude){
 //		return 156543.03392 * Math.cos(latitude * Math.PI / 180) / Math.pow(2, zoom);
-//		
+//		WRONG
 //	}
 	
 	public static double getMetersPerPixel(int zoom, double latitude){

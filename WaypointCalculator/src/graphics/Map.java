@@ -5,9 +5,10 @@ import java.awt.image.BufferedImage;
 
 import calculator.App;
 import geometry.Point;
-import gui.GuiDisplayPanel;
+import gui.DisplayPanel;
 import logginig.Logger;
 import tools.GoogleTools;
+import tools.IOTools;
 
 public class Map{
 	
@@ -22,8 +23,8 @@ public class Map{
 	 * Map contains SW and NE points and GoogleMap image
 	 * @param polygon
 	 */
-	public Map(Dimention ovf, Dimension canvasSize, GuiDisplayPanel display) {				
-		image = GoogleTools.getMapImage(ovf, canvasSize, display.zoom, App.APP_BLANK_MAP);		
+	public Map(Dimention ovf, Dimension canvasSize, DisplayPanel display) {				
+		image = IOTools.getMapImage(GoogleTools.URL_PATTERN, ovf, canvasSize, display.zoom, App.APP_BLANK_MAP);		
 
 		Point center = ovf.getCenter(); 
 		if(image != null) {

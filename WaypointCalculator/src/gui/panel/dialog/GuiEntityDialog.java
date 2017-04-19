@@ -1,4 +1,4 @@
-package gui;
+package gui.panel.dialog;
 
 import java.awt.Color;
 import java.awt.Component;

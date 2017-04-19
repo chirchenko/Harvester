@@ -10,17 +10,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import gui.window.WindowConsole;
 import logginig.GuiConsoleLogger;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
-public class GuiConsolePanel extends JPanel implements ActionListener {
+public class ConsolePanel extends JPanel implements ActionListener {
 	
 	public JTextArea output;        
     private JButton buttonExtend;
     private WindowConsole consolFrame;
 
-    public GuiConsolePanel() {
+    public ConsolePanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Console"));            
 

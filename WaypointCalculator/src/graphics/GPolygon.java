@@ -7,15 +7,15 @@ import java.awt.RenderingHints;
 
 import geometry.Point;
 import geometry.Polygon;
-import gui.GuiCanvasPanel;
+import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GPolygon extends java.awt.Polygon implements CanvasObject {
 	private Color color;
-	private GuiCanvasPanel canvas;
+	private CanvasPanel canvas;
 	private geometry.Polygon polygon;
 	
-	public GPolygon(Polygon polygon, GuiCanvasPanel canvas, Color color) {
+	public GPolygon(Polygon polygon, CanvasPanel canvas, Color color) {
 		super();
 		this.color = color;
 		this.polygon = polygon;

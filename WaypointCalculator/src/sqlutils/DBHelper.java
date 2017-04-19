@@ -1,10 +1,11 @@
-package SQLUtils;
+package sqlutils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -106,7 +107,7 @@ public class DBHelper {
 	}
 
 	private static Connection getConnection() {
-		if(connection == null){
+		if (connection == null) {
 			try {
 				Class.forName(SQL_DRIVER);
 				connection = DriverManager.getConnection(SQL_DB_JDBC + SQL_DB_NAME);
@@ -183,15 +184,27 @@ public class DBHelper {
 			logger.info("Database exists. Connecting...");
 		} else {
 			logger.info("Database does not exists. Creating...");
-		}
+		}		
 		if (DBHelper.getConnection() == null) {
 			throw new SQLException("Failed to create connection");
+		}else{
+			logger.info("Connected to database");
 		}
 
 		logger.info("Validating schema");
 		if (!isDbInitailized()) {
 			logger.info("Database is not initialized. Running core script...");
-			executePlainUpdate(getSqlText("create-schema.sql"));
+			String coreScript = getSqlText("create-schema.sql");
+			
+			BufferedReader br = new BufferedReader(new StringReader(coreScript));
+			String line = null;
+			while( (line=br.readLine()) != null )			{
+				logger.info(line);
+			}
+			
+			if(0 < executePlainUpdate(getSqlText("create-schema.sql"))){
+				logger.info("Schema created");
+			}
 
 			logger.info("Importing preset");
 			String filePath = App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/initial.xml";

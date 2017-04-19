@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import SQLUtils.DBHelper;
 import logginig.Logger;
+import sqlutils.DBHelper;
 
 public class Points {
 	private static Logger logger = Logger.getLogger(Points.class);

@@ -1,4 +1,4 @@
-package gui;
+package gui.window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,6 +31,10 @@ import domains.Points;
 import geometry.Displayable;
 import geometry.Point;
 import geometry.Polygon;
+import gui.ConsolePanel;
+import gui.DisplayPanel;
+import gui.panel.FieldListPanel;
+import gui.panel.MachineListPanel;
 import logginig.Logger;
 import logic.WaypointFinder;
 import tools.ExportImport;
@@ -42,10 +46,10 @@ public class WindowMain extends JFrame{
 	final static int windowWidth = 1280;
 	final static int windowhHeight = 924;
 	
-	private GuiFieldsPanel fieldList;
-	private GuiMachinaryPanel machineList;
-	private GuiDisplayPanel display;	
-	private GuiConsolePanel console;
+	private FieldListPanel fieldList;
+	private MachineListPanel machineList;
+	private DisplayPanel display;	
+	private ConsolePanel console;
 
 	private WaypointFinder wpf;
 
@@ -82,7 +86,7 @@ public class WindowMain extends JFrame{
         JPanel windowContainer = new JPanel(new BorderLayout());	    
         JPanel sidePanel = new JPanel(new BorderLayout());
              
-        fieldList = new GuiFieldsPanel("Fields", () -> {
+        fieldList = new FieldListPanel("Fields", () -> {
 				display.field = fieldList.getSelected();
 		    	
 		    	Polygon polygon = new Polygon(display.field.points);
@@ -90,14 +94,14 @@ public class WindowMain extends JFrame{
 				
 				display.getCanvas().clear();
 				
-				display.addDisplayObject(GuiDisplayPanel.GROUP_FIELD, (ArrayList<Point>) polygon, new Color(0, 255, 0, 127));
-				display.addDisplayObject(GuiDisplayPanel.GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
+				display.addDisplayObject(DisplayPanel.GROUP_FIELD, (ArrayList<Point>) polygon, new Color(0, 255, 0, 127));
+				display.addDisplayObject(DisplayPanel.GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
 				
 				display.getCanvas().render();
 				display.label.setText("Now please select harvester");
 		});
         
-        machineList = new GuiMachinaryPanel("Harvesters",() -> {
+        machineList = new MachineListPanel("Harvesters",() -> {
         	display.machine = machineList.getSelected(); 		
     		
     		logger.info("Invoking building waypoints"); 
@@ -109,10 +113,10 @@ public class WindowMain extends JFrame{
 
     		wpf = new WaypointFinder(display.field.points, display.machine.workWidth);
     		
-    		display.clearDisplayObject(GuiDisplayPanel.GROUP_WP);
+    		display.clearDisplayObject(DisplayPanel.GROUP_WP);
     		
-    		display.addDisplayObject(GuiDisplayPanel.GROUP_WP, wpf.getWaypoints(), Color.RED);
-    		display.addDisplayObject(GuiDisplayPanel.GROUP_WP, wpf.getPath(), Color.YELLOW);		
+    		display.addDisplayObject(DisplayPanel.GROUP_WP, wpf.getWaypoints(), Color.RED);
+    		display.addDisplayObject(DisplayPanel.GROUP_WP, wpf.getPath(), Color.YELLOW);		
     		display.render();
     		
     		double distance = wpf.getPath().getTotalDistance();
@@ -126,8 +130,8 @@ public class WindowMain extends JFrame{
     		logger.info(result);
     		display.label.setText(result);
         });
-        display = new GuiDisplayPanel();    
-        console = new GuiConsolePanel();       
+        display = new DisplayPanel();    
+        console = new ConsolePanel();       
 
         windowContainer.add(display);
         JSplitPane mainSplitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, windowContainer, sidePanel);

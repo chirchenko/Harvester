@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
-import SQLUtils.DBHelper;
 import domains.Points.Point;
 import logginig.Logger;
+import sqlutils.DBHelper;
 
 public class Fields {
 	private static Logger logger = Logger.getLogger(Fields.class);

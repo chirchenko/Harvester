@@ -8,16 +8,16 @@ import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 
 import calculator.App;
-import gui.GuiCanvasPanel;
+import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GPoint extends Point implements CanvasObject {
 	private Color color;
 	private int size = 5;
-	private GuiCanvasPanel canvas;
+	private CanvasPanel canvas;
 	private geometry.Point point;
 
-	public GPoint(geometry.Point point, GuiCanvasPanel canvas, Color color) {
+	public GPoint(geometry.Point point, CanvasPanel canvas, Color color) {
 		super();
 		this.point = point;
 		this.color = color;

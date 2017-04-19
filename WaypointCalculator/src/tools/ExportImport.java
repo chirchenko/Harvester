@@ -37,21 +37,24 @@ public class ExportImport {
 		Domains domains = (Domains) jaxbUnmarshaller.unmarshal(file);
 		
 		if(domains.machines != null){
+			
+			logger.info("\tImporting Machines");
 			for(Machine m : domains.machines){
-				logger.info("\tSaving " + m);
+				logger.info("\t\tImporting " + m);
 				m.save();
 				m.persist();
 			}
 		}
 		
 		if(domains.fields != null){
-			
+
+			logger.info("\tImporting Fields");
 			for(Field f : domains.fields){
 				if(f.points == null){
 					logger.info("Field " + f + " has no points. Skipping");
 					continue;
 				};
-				logger.info("\tSaving " + f);
+				logger.info("\t\tImporting " + f);
 				f.save();
 				f.persist();
 				for(Point p : f.points){

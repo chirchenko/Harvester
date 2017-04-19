@@ -10,22 +10,22 @@
 	</path>
 	
 	<path id="build-jar-classpath">
-		<fileset dir="${build.dir}/${lib.dir}" includes="*.jar" excludes="${name}.jar"/>
+		<fileset dir="${build.dir}" includes="${lib.dir}/*.jar" excludes="${lib.dir}/${name}*.jar"/>
 	</path>
 	
-	<target name="zip" description="Archives distributive" depends="build-jar">
-		<zip destfile="${build.dir}/${name}.zip"
+	<target name="zip" description="Archives distributive" depends="jar">
+		<zip destfile="${build.dir}/${name}_v${version}.zip"
 			basedir="${build.dir}" />
 		
 		<delete includeemptydirs="true" dir="${build.dir}" excludes="*.zip" />	
 	</target>
 	
-	<target name="run" depends="build-jar" description="Run program">
+	<target name="run" depends="jar" description="Run program">
 		<property name="exec.path" location="${build.dir}/${name}.bat"/>
 		<exec dir="${build.dir}" executable="${exec.path}" vmlauncher="true"/>
 	</target>
 
-	<target name="build-jar" description="Pack into jar file" depends="copy-dependancies">
+	<target name="jar" description="Pack into jar file" depends="copy-dependancies">
 		<mkdir dir="${build.dir}"/>
 		
 		<pathconvert property="manifest.classpath" refid="build-jar-classpath">		
@@ -58,6 +58,8 @@
 				<include name="${export.dir}/**"/>
 			</fileset>
 		</copy>
+		
+		<replace file="${build.dir}/${resources.dir}/${script.dir}/create-schema.sql" token="@@@" value="${version}"/>
 		
 		<echo file="${build.dir}/${name}.bat">java -Dfile.encoding=UTF8 -jar ${lib.dir}\${name}.jar</echo>
 	</target>

@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import SQLUtils.DBHelper;
 import logginig.Logger;
+import sqlutils.DBHelper;
 
 public class Machinery {
 	private static Logger logger = Logger.getLogger(Machinery.class);
