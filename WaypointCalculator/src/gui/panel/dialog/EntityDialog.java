@@ -37,7 +37,7 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 	
 	public JDialog dialog = null;
 	private Window owner = null;
-	private T entity = null;
+	private PersistentObject entity = null;
 	private JPanel entityPanel = new JPanel();
 	private JButton buttonOk;
 	private JButton buttonCancel;
@@ -67,11 +67,11 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 		add(buttonCancel, c);
 	}
 
-	public abstract void composeEntityElements(JPanel panel, T entity);
-	public abstract T collectEntity(T entity);
+	public abstract void composeEntityElements(JPanel panel, PersistentObject entity);
+	public abstract PersistentObject collectEntity(PersistentObject entity);
 
-	public void showDialog(T entity) {
-		this.entity = entity;
+	public void showDialog(PersistentObject entity) {
+		this.entity = entity.clone();
 		String title = entity.getClass().getSimpleName() + " entity";
 
 		dialog = new LocalDialog((Frame) owner);		

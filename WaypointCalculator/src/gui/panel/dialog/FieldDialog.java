@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 
 import domains.DataChangeListener;
+import domains.PersistentObject;
 import domains.Fields.Field;
 import domains.Points.Point;
 import gui.panel.PointListPanel;
@@ -27,13 +28,14 @@ public class FieldDialog extends EntityDialog<Field> {
 	private PointListPanel listPoints;
 
 	@Override
-	public void composeEntityElements(JPanel panel, Field entity) {
-
+	public void composeEntityElements(JPanel panel, PersistentObject entity) {
+		Field field = (Field) entity;
+		
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		JLabel lblId = new JLabel("Id");
-		lblId.setVisible(entity.id != 0);
+		lblId.setVisible(field.id != 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -42,8 +44,8 @@ public class FieldDialog extends EntityDialog<Field> {
 		panel.add(lblId, gbc);
 
 		txtId = new JTextField();
-		txtId.setVisible(entity.id != 0);
-		txtId.setText(String.valueOf(entity.id));
+		txtId.setVisible(field.id != 0);
+		txtId.setText(String.valueOf(field.id));
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -64,7 +66,7 @@ public class FieldDialog extends EntityDialog<Field> {
 		gbc.weightx = 1;
 		panel.add(lblName, gbc);
 
-		txtName = new JTextField(entity.name, 15);
+		txtName = new JTextField(field.name, 15);
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -75,8 +77,8 @@ public class FieldDialog extends EntityDialog<Field> {
 		panel.add(txtName, gbc);
 
 		Point point = new Point();
-		point.fieldId = entity.id;
-		point.seq = entity.points.size();
+		point.fieldId = field.id;
+		point.seq = field.points.size();
 
 		listPoints = new PointListPanel("Points", null, point);
 		gbc = new GridBagConstraints();
@@ -93,7 +95,8 @@ public class FieldDialog extends EntityDialog<Field> {
 	}
 
 	@Override
-	public Field collectEntity(Field field) {
+	public Field collectEntity(PersistentObject entity) {
+		Field field = (Field) entity;
 		field.id = Integer.valueOf(txtId.getText());
 		field.name = txtName.getText();
 		field.points = new ArrayList<>();

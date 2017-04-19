@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 
 import domains.DataChangeListener;
 import domains.Machinery.Machine;
+import domains.PersistentObject;
 
 @SuppressWarnings("serial")
 public class MachineDialog extends EntityDialog<Machine> {
@@ -24,12 +25,14 @@ public class MachineDialog extends EntityDialog<Machine> {
 	private JTextField txtFuel;
 
 	@Override
-	public void composeEntityElements(JPanel panel, Machine entity) {
+	public void composeEntityElements(JPanel panel, PersistentObject entity) {
+		Machine machine = (Machine) entity;
+		
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		JLabel lblId = new JLabel("Id");
-		lblId.setVisible(entity.id != 0);
+		lblId.setVisible(machine.id != 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -38,8 +41,8 @@ public class MachineDialog extends EntityDialog<Machine> {
 		panel.add(lblId, gbc);
 
 		txtId = new JTextField();
-		txtId.setVisible(entity.id != 0);
-		txtId.setText(String.valueOf(entity.id));
+		txtId.setVisible(machine.id != 0);
+		txtId.setText(String.valueOf(machine.id));
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -60,7 +63,7 @@ public class MachineDialog extends EntityDialog<Machine> {
 		gbc.weightx = 1;
 		panel.add(lblName, gbc);
 
-		txtName = new JTextField(entity.name, 15);
+		txtName = new JTextField(machine.name, 15);
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -78,7 +81,7 @@ public class MachineDialog extends EntityDialog<Machine> {
 		gbc.weightx = 1;
 		panel.add(lblWodth, gbc);
 
-		txtWidth = new JTextField(String.valueOf(entity.workWidth));
+		txtWidth = new JTextField(String.valueOf(machine.workWidth));
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -98,7 +101,7 @@ public class MachineDialog extends EntityDialog<Machine> {
 		gbc.weightx = 1;
 		panel.add(lblFuel, gbc);
 
-		txtFuel = new JTextField(String.valueOf(entity.workWidth));
+		txtFuel = new JTextField(String.valueOf(machine.workWidth));
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 3;
@@ -110,7 +113,8 @@ public class MachineDialog extends EntityDialog<Machine> {
 	}
 
 	@Override
-	public Machine collectEntity(Machine machine) {
+	public Machine collectEntity(PersistentObject entity) {
+		Machine machine = (Machine) entity;
 		machine.id = Integer.valueOf(txtId.getText());
 		machine.name = txtName.getText();
 		machine.workWidth = Double.valueOf(txtWidth.getText());
