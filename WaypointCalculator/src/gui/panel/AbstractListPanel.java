@@ -23,12 +23,12 @@ import javax.swing.SwingUtilities;
 import domains.DataChangeListener;
 import domains.PersistentObject;
 import domains.ToolTipRecord;
-import gui.panel.dialog.GuiEntityDialog;
+import gui.panel.dialog.EntityDialog;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
 public abstract class AbstractListPanel<T extends PersistentObject> extends JPanel 
-							implements DataChangeListener, MouseListener{
+							implements DataChangeListener, MouseListener, ActionListener{
 
 	private Logger logger = Logger.getLogger(AbstractListPanel.class);
 	
@@ -39,7 +39,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	}
 	
 	protected T emptyEntity;
-	private GuiEntityDialog<T> entityDialog = null;
+	private EntityDialog<T> entityDialog = null;
 	private JScrollPane scrollPane;
 	public JList<T> displayList;
 	
@@ -60,7 +60,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	
 	public abstract void loadData(DefaultListModel<T> model);
 	
-	public abstract GuiEntityDialog<T> assignDialog();
+	public abstract EntityDialog<T> assignDialog();
 	
 
 	private void initAbstractUI(String listName) {
@@ -100,51 +100,16 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	     * 3-button section below list
 	     */
 	    buttonAdd = new JButton("Add");
+		buttonAdd.addActionListener(this);	
+		
 	    buttonRemove = new JButton("Remove");
-	    buttonModify = new JButton("Edit");
-	    
-	    buttonAdd.setEnabled(true);
 	    buttonRemove.setEnabled(false);
-	    buttonModify.setEnabled(false);
-
-	    /*
-	     * button click calls edit dialog
-	     */
-		buttonAdd.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				entityDialog.showDialog(emptyEntity);
-			}
-		});
-		
-		buttonModify.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				entityDialog.showDialog(displayList.getSelectedValue());
-			}
-		});
-		
-		buttonRemove.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for(T entity : displayList.getSelectedValuesList()){
-					try {
-						entity.delete();
-					} catch (SQLException e1) {
-						logger.info("Failed to save record");
-						logger.info(e1);
-						JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(entityDialog),
-								e1.getMessage(),
-							    "Error",
-							    JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
-		});
+	    buttonRemove.addActionListener(this);
 	    
+	    buttonModify = new JButton("Edit");
+	    buttonModify.setEnabled(false);
+		buttonModify.addActionListener(this);
+
 	    /*
 	     * Button are enabled/disabled depending on selection
 	     */
@@ -163,7 +128,6 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	    managePanel.add(buttonAdd, c);
 	    managePanel.add(buttonRemove, c);
 	    managePanel.add(buttonModify, c);
-
 	    this.add(managePanel, BorderLayout.SOUTH);
 	}
 
@@ -177,10 +141,34 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	    revalidate();
 		repaint();
 	}
-
-	public void listEnabled(boolean enabled) {
-		scrollPane.setEnabled(enabled);
-		displayList.setEnabled(enabled);
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if(source == buttonAdd){
+			
+			entityDialog.showDialog(emptyEntity);
+			
+		} else if(source == buttonModify){
+			
+			entityDialog.showDialog(displayList.getSelectedValue());
+		
+		} else if(source == buttonRemove){
+			
+			for(T entity : displayList.getSelectedValuesList()){
+				try {
+					entity.delete();
+				} catch (SQLException e1) {
+					logger.info("Failed to delete record");
+					logger.info(e1.getMessage());
+					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(entityDialog),
+							e1.getMessage(),
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			
+		}
 	}
 
 	@Override

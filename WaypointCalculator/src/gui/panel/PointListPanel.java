@@ -4,8 +4,8 @@ import javax.swing.DefaultListModel;
 
 import domains.Points;
 import domains.Points.Point;
-import gui.panel.dialog.GuiEntityDialog;
-import gui.panel.dialog.GuiPointDialog;
+import gui.panel.dialog.EntityDialog;
+import gui.panel.dialog.PointDialog;
 
 @SuppressWarnings("serial")
 public class PointListPanel extends AbstractListPanel<Point> {
@@ -28,7 +28,7 @@ public class PointListPanel extends AbstractListPanel<Point> {
 	}
 
 	@Override
-	public GuiEntityDialog<Point> assignDialog() {
-		return new GuiPointDialog(this);
+	public EntityDialog<Point> assignDialog() {
+		return new PointDialog(this);
 	}
 }

@@ -41,7 +41,14 @@ public class Machinery {
 			}else{
 				this.id = machinery.get(idx).id;
 				machinery.set(idx, this);
-			}			
+			}
+			
+			persist();
+		}
+		
+		@Override
+		public int getId(){
+			return this.id;
 		}
 		
 		@Override
@@ -58,20 +65,28 @@ public class Machinery {
 		
 		@Override
 		public void delete() throws SQLException {
-			
+			DBHelper.executeUpdate("DELETE FROM MACHINERY WHERE ID = ?", new Object[]{ this.id });
 		}		
 		
 		@Override
+		public void dispose() {
+			//Nothing to dispose
+		}
+		
+		@Override
 		public String validate() throws SQLException {
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?", new Object[]{this.name});
-			rs.next();
-			if(rs.getBoolean("EXIST")) return "Entity with this name already exeists";
-			
 			if("".equals(this.name)) return "Name cannot be empty";
 			
 			if(this.fuel == 0.0) return "Fuel consumption cannot be 0.0";
 
 			if(this.workWidth == 0.0) return "Work width cannot be 0.0";
+			
+			if(this.id == 0){
+				ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?", new Object[]{this.name});
+				rs.next();
+				if(rs.getBoolean("EXIST")) return "Entity with this name already exeists";
+			}
+			
 			return "";
 		}
 		

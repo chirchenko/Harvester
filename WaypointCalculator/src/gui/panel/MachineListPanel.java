@@ -4,8 +4,8 @@ import javax.swing.DefaultListModel;
 
 import domains.Machinery;
 import domains.Machinery.Machine;
-import gui.panel.dialog.GuiEntityDialog;
-import gui.panel.dialog.GuiMachineDialog;
+import gui.panel.dialog.EntityDialog;
+import gui.panel.dialog.MachineDialog;
 
 @SuppressWarnings("serial")
 public class MachineListPanel extends AbstractListPanel<Machine> {
@@ -23,7 +23,7 @@ public class MachineListPanel extends AbstractListPanel<Machine> {
 	}
 
 	@Override
-	public GuiEntityDialog<Machine> assignDialog() {
-		return new GuiMachineDialog(this);
+	public EntityDialog<Machine> assignDialog() {
+		return new MachineDialog(this);
 	}
 }

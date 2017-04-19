@@ -3,32 +3,28 @@ package gui.panel.dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 
 import domains.DataChangeListener;
-import domains.Fields.Field;
-import domains.Points.Point;
-import gui.panel.PointListPanel;
+import domains.Machinery.Machine;
 
 @SuppressWarnings("serial")
-public class GuiFieldDialog extends GuiEntityDialog<Field> {
+public class MachineDialog extends EntityDialog<Machine> {
 
-	public GuiFieldDialog(DataChangeListener dataChangeListener) {
+	public MachineDialog(DataChangeListener dataChangeListener) {
 		super(dataChangeListener);
 	}
 
 	private JTextField txtId;
 	private JTextField txtName;
-	private PointListPanel listPoints;
+	private JTextField txtWidth;
+	private JTextField txtFuel;
 
 	@Override
-	public void composeEntityElements(JPanel panel, Field entity) {
-
+	public void composeEntityElements(JPanel panel, Machine entity) {
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -37,7 +33,7 @@ public class GuiFieldDialog extends GuiEntityDialog<Field> {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.insets = new Insets(0, 10, 5, 0);
+		gbc.insets = new Insets(0, 10, 0, 0);
 		gbc.weightx = 1;
 		panel.add(lblId, gbc);
 
@@ -74,33 +70,51 @@ public class GuiFieldDialog extends GuiEntityDialog<Field> {
 		gbc.weightx = 1;
 		panel.add(txtName, gbc);
 
-		Point point = new Point();
-		point.fieldId = entity.id;
-		point.seq = entity.points.size();
+		JLabel lblWodth = new JLabel("Work width, m");
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.insets = new Insets(0, 10, 0, 0);
+		gbc.weightx = 1;
+		panel.add(lblWodth, gbc);
 
-		listPoints = new PointListPanel("Points", null, point);
+		txtWidth = new JTextField(String.valueOf(entity.workWidth));
 		gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.NORTH;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridwidth = 4;
-		gbc.gridheight = 4;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 3;
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		gbc.insets = new Insets(5, 0, 0, 10);
+		gbc.weightx = 1;
+		panel.add(txtWidth, gbc);
+
+		JLabel lblFuel = new JLabel("Fuel consumption, l/100 km");
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.gridy = 3;
-		gbc.insets = new Insets(5, 10, 5, 10);
-		gbc.weightx = 2;
-		gbc.weighty = 2;
-		panel.add(listPoints, gbc);
+		gbc.insets = new Insets(0, 10, 5, 0);
+		gbc.weightx = 1;
+		panel.add(lblFuel, gbc);
+
+		txtFuel = new JTextField(String.valueOf(entity.workWidth));
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 3;
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		gbc.insets = new Insets(5, 0, 5, 10);
+		gbc.weightx = 1;
+		panel.add(txtFuel, gbc);
 	}
 
 	@Override
-	public Field collectEntity(Field field) {
-		field.id = Integer.valueOf(txtId.getText());
-		field.name = txtName.getText();
-		field.points = new ArrayList<>();
-		ListModel<Point> elements = listPoints.displayList.getModel();
-		for (int i = 0; i < elements.getSize(); i++) {
-			field.points.add(elements.getElementAt(i));
-		}
-		return field;
+	public Machine collectEntity(Machine machine) {
+		machine.id = Integer.valueOf(txtId.getText());
+		machine.name = txtName.getText();
+		machine.workWidth = Double.valueOf(txtWidth.getText());
+		machine.fuel = Double.valueOf(txtFuel.getText());
+		return machine;
 	}
 }

@@ -12,9 +12,9 @@ import domains.DataChangeListener;
 import domains.Points.Point;
 
 @SuppressWarnings("serial")
-public class GuiPointDialog extends GuiEntityDialog<Point> {
+public class PointDialog extends EntityDialog<Point> {
 
-	public GuiPointDialog(DataChangeListener dataChangeListener) {
+	public PointDialog(DataChangeListener dataChangeListener) {
 		super(dataChangeListener);
 	}
 

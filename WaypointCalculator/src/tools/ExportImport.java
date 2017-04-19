@@ -13,7 +13,6 @@ import domains.Fields;
 import domains.Fields.Field;
 import domains.Machinery;
 import domains.Machinery.Machine;
-import domains.Points.Point;
 import logginig.Logger;
 
 public class ExportImport {
@@ -42,7 +41,6 @@ public class ExportImport {
 			for(Machine m : domains.machines){
 				logger.info("\t\tImporting " + m);
 				m.save();
-				m.persist();
 			}
 		}
 		
@@ -55,13 +53,7 @@ public class ExportImport {
 					continue;
 				};
 				logger.info("\t\tImporting " + f);
-				f.save();
-				f.persist();
-				for(Point p : f.points){
-					p.fieldId = f.id;
-					p.save();
-					p.persist();
-				}
+				f.save();				
 			}
 		}
 	}

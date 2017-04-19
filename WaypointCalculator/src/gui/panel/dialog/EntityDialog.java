@@ -30,10 +30,10 @@ import domains.PersistentObject;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
-public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel 
+public abstract class EntityDialog<T extends PersistentObject> extends JPanel 
 	implements ActionListener {
 
-	private Logger logger = Logger.getLogger(GuiEntityDialog.class);
+	private Logger logger = Logger.getLogger(EntityDialog.class);
 	
 	public JDialog dialog = null;
 	private Window owner = null;
@@ -44,7 +44,7 @@ public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel
 
 	private DataChangeListener dataChangeListener;
 
-	public GuiEntityDialog(DataChangeListener dataChangeListener){
+	public EntityDialog(DataChangeListener dataChangeListener){
 		this.owner = SwingUtilities.getWindowAncestor((Component) dataChangeListener);
 		this.dataChangeListener = dataChangeListener;
 		initBasicElements();
@@ -84,7 +84,8 @@ public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel
 		buttonOk.requestFocus();
 		installEscapeCloseOperation(dialog);
 		
-		JPanel container = new JPanel(new GridBagLayout());composeEntityElements(entityPanel, entity);
+		JPanel container = new JPanel(new GridBagLayout());
+		composeEntityElements(entityPanel, entity);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		gbc.gridy = 1;
@@ -112,7 +113,7 @@ public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel
 			dialog.getRootPane().removeAll();
 			dialog.removeAll();
 			dialog.dispose();
-			
+
 			entity = null; 	
 			entityPanel = new JPanel();
 		}
@@ -135,34 +136,47 @@ public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == buttonOk) {
-			try {
+		try {
+			if (e.getSource() == buttonOk) {
+				
 				entity = collectEntity(entity);
-				String error = entity.validate();  
+				String error = entity.validate(); 
+				
 				if(!"".equals(error)){
 					JOptionPane.showMessageDialog(this,
 							error,
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
 				}else{
-					entity.save();
-					entity.persist();
-					dataChangeListener.dataChanged();
+					if(entity.getId() == 0){
+						logger.info("Creating new entity " + entity);
+						entity.save();
+						
+						logger.info("\tEntity created");
+					}else{
+						logger.info("Modifying entity " + entity);
+						entity.save();
+						
+						logger.info("\nEntity changed");
+					}
 					
+					dataChangeListener.dataChanged();					
 					closeDialog();
 				}
 				
-			} catch (SQLException e1) {
-				logger.info("Failed to save record");
-				logger.info(e1);
-				JOptionPane.showMessageDialog(this,
-						e1.getMessage(),
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
+			} else if (e.getSource() == buttonCancel) {
+				entity.dispose();
+				closeDialog();
+				dataChangeListener.dataChanged();	///tmp
+				
 			}
-
-		} else if (e.getSource() == buttonCancel) {
-			closeDialog();
+		} catch (SQLException e1) {
+			logger.info("Failed to save record");
+			logger.info(e1);
+			JOptionPane.showMessageDialog(this,
+					e1.getMessage(),
+				    "Error",
+				    JOptionPane.ERROR_MESSAGE);
 		}
 	} 
 
@@ -172,10 +186,9 @@ public abstract class GuiEntityDialog<T extends PersistentObject> extends JPanel
 				dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
 			}
 		};
-		KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-		String dispatchWindowClosingActionMapKey = "com.spodding.tackline.dispatch:WINDOW_CLOSING";
 		JRootPane root = dialog.getRootPane();
-		root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeStroke, dispatchWindowClosingActionMapKey);
-		root.getActionMap().put(dispatchWindowClosingActionMapKey, dispatchClosing);
+		root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0)
+				, "com.spodding.tackline.dispatch:WINDOW_CLOSING");
+		root.getActionMap().put("com.spodding.tackline.dispatch:WINDOW_CLOSING", dispatchClosing);
 	}
 }

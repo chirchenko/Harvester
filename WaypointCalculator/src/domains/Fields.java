@@ -1,4 +1,4 @@
- package domains;
+package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,55 +17,78 @@ public class Fields {
 	private static Logger logger = Logger.getLogger(Fields.class);
 	public final static String TABLE_NAME = "FIELDS";
 
-	private static List<Field> 	fields = new ArrayList<>();
+	private static List<Field> fields = new ArrayList<>();
 	private static List<DataChangeListener> listeners = new ArrayList<>();
-	
-	public static class Field extends PersistentObject implements ToolTipRecord{
-		
+
+	public static class Field extends PersistentObject implements ToolTipRecord {
+
 		@XmlTransient
 		public int id;
 		public String name = "";
-		
-		@XmlElement(name="point")
+
+		@XmlElement(name = "point")
 		@XmlElementWrapper
 		public List<Point> points = new ArrayList<>();
-		
-		private Field load(ResultSet rs) throws SQLException{
-			this.id = rs.getInt("ID");			
+
+		private Field load(ResultSet rs) throws SQLException {
+			this.id = rs.getInt("ID");
 			this.name = rs.getString("NAME");
 			this.points = Points.getPoints(this.id);
 			return this;
 		}
-		
+
 		@Override
-		public void save() throws SQLException{
+		public void save() throws SQLException {
 			int idx = fields.indexOf(this);
-			if(idx == -1){
+			if (idx == -1) {
 				this.id = DBHelper.getNextSequence(Fields.TABLE_NAME);
 				fields.add(this);
-			}else{
+			} else {
 				this.id = fields.get(idx).id;
 				fields.set(idx, this);
+			}
+
+			this.persist();
+
+			for (Point point : this.points) {
+				point.fieldId = this.id;
+				point.seq = this.points.size();
+				point.save();
+				point.persist();
 			}
 		}
 
 		@Override
+		public int getId() {
+			return this.id;
+		}
+
+		@Override
 		public void persist() throws SQLException {
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{this.id});
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?",
+					new Object[] { this.id });
 			rs.next();
-			
-			if(rs.getBoolean("EXIST")){
-				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME), new Object[]{ this.name, this.id });//update
+
+			if (rs.getBoolean("EXIST")) {
+				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME),
+						new Object[] { this.name, this.id });// update
 			} else {
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?)", TABLE_NAME), new Object[]{ this.id, this.name });//insert
+				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?)", TABLE_NAME),
+						new Object[] { this.id, this.name });// insert
 			}
 		}
 
 		@Override
 		public void delete() throws SQLException {
-			// TODO Auto-generated method stub
-			
-		}		
+			DBHelper.executeUpdate("DELETE FROM FIELDS WHERE ID = ?", new Object[] { this.id });
+		}
+
+		@Override
+		public void dispose() {
+			for (Point p : Points.getPoints(this.id)) {
+				points.remove(p);
+			}
+		}
 
 		@Override
 		public boolean equals(Object obj) {
@@ -83,55 +106,61 @@ public class Fields {
 				return false;
 			return true;
 		}
-		
+
 		@Override
 		public String validate() throws SQLException {
-			if("".equals(this.name)) return "Name cannot be empty";
-			
-			if(points.size() < 3) return "Field should contain at least 3 points";
-			
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?", new Object[]{this.name});
-			rs.next();
-			if(rs.getBoolean("EXIST")) return "Entity with this name already exeists";
+			if ("".equals(this.name))
+				return "Name cannot be empty";
+
+			if (points.size() < 3)
+				return "Field should contain at least 3 points";
+
+			if (this.id == 0) {
+				ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?",
+						new Object[] { this.name });
+				rs.next();
+				if (rs.getBoolean("EXIST"))
+					return "Entity with this name already exeists";
+			}
 			return "";
-		}
+		}		
 
 		@Override
 		public String toString() {
 			return name;
 		}
 	}
-	
-	public static void addDataChangedListener(DataChangeListener listener){
+
+	public static void addDataChangedListener(DataChangeListener listener) {
 		listeners.add(listener);
 	}
-	
-	public static void loadAll() throws SQLException{
+
+	public static void loadAll() throws SQLException {
 		logger.info("Loading Fields...");
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME FROM %s", TABLE_NAME), null);
 
 		fields.clear();
-		while(rs.next()){
+		while (rs.next()) {
 			fields.add(new Field().load(rs));
 		}
 		logger.info(String.format("\tLoaded %d fields", fields.size()));
 		notifyListeners();
 	}
-	
-	public static void saveAll() throws SQLException{
-		for(Field o : fields){
+
+	public static void saveAll() throws SQLException {
+		for (Field o : fields) {
 			o.save();
 		}
 		notifyListeners();
 	}
-	
+
 	private static void notifyListeners() {
-		for(DataChangeListener l : listeners){
+		for (DataChangeListener l : listeners) {
 			l.dataChanged();
 		}
 	}
 
 	public static List<Field> getFields() {
 		return fields;
-	}	
+	}
 }

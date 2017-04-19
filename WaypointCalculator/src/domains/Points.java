@@ -50,6 +50,11 @@ public class Points {
 		}
 		
 		@Override
+		public int getId(){
+			return this.id;
+		}
+		
+		@Override
 		public void persist() throws SQLException {
 			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{this.id});
 			rs.next();
@@ -60,13 +65,17 @@ public class Points {
 				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, FIELD_ID, SEQ, LAT, LON) VALUES (?, ?, ?, ?, ?)", TABLE_NAME), new Object[]{this.id, this.fieldId, this.seq, this.lat, this.lon });//insert
 			}
 		}
-
+		
 		@Override
 		public void delete() throws SQLException {
-			// TODO Auto-generated method stub
-			
-		}		
+			DBHelper.executeUpdate("DELETE FROM POINTS WHERE ID = ?", new Object[]{ this.id });
+		}
+		
+		@Override
+		public void dispose() {
 
+		}	
+				
 		@Override
 		public String validate() throws SQLException {
 			if(this.lat < -90 || this.lat > 90 
@@ -100,7 +109,7 @@ public class Points {
 		@Override
 		public String toString() {
 			return String.format("[%f; %f]", lat, lon);
-		}		
+		}			
 	}
 	
 	public static void loadAll() throws SQLException{

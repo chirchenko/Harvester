@@ -187,7 +187,6 @@ public class WindowMain extends JFrame{
 				Points.loadAll();
 				Fields.loadAll();
 				
-				machineList.listEnabled(display.field != null);
 				logger.info("Import successfull");
 				JOptionPane.showMessageDialog(this,
 					    "Import completed");
