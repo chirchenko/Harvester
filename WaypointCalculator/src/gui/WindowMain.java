@@ -94,18 +94,19 @@ public class WindowMain extends JFrame{
 				display.addDisplayObject(GuiDisplayPanel.GROUP_FIELD, (Displayable) polygon, new Color(50, 30, 210, 32));
 				
 				display.getCanvas().render();
-				machineList.listEnabled(true);
+				display.label.setText("Now please select harvester");
 		});
         
         machineList = new GuiMachinaryPanel("Harvesters",() -> {
         	display.machine = machineList.getSelected(); 		
     		
     		logger.info("Invoking building waypoints"); 
-    		if(display.machine == null || display.machine.workWidth == 0 || display.field.points == null){
-    			logger.info("Datasource not ready"); 
+    		if(display.field == null){
+    			logger.info("Field is not ready");
+    			display.label.setText("Please select field[!!!]");
     			return;
     		}
-    		logger.info("Datasource ready"); 
+
     		wpf = new WaypointFinder(display.field.points, display.machine.workWidth);
     		
     		display.clearDisplayObject(GuiDisplayPanel.GROUP_WP);
@@ -126,9 +127,7 @@ public class WindowMain extends JFrame{
     		display.label.setText(result);
         });
         display = new GuiDisplayPanel();    
-        console = new GuiConsolePanel();
-        
-        machineList.listEnabled(false);        
+        console = new GuiConsolePanel();       
 
         windowContainer.add(display);
         JSplitPane mainSplitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, windowContainer, sidePanel);

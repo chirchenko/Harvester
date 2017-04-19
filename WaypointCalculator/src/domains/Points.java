@@ -17,7 +17,7 @@ public class Points {
 	
 	private static List<Point> points = new ArrayList<>();;
 	
-	public static class Point{
+	public static class Point extends PersistentObject {
 		
 		@XmlTransient
 		public int id;
@@ -37,6 +37,7 @@ public class Points {
 			return this;
 		}
 		
+		@Override
 		public void save() throws SQLException{
 			int idx = points.indexOf(this);
 			if(idx == -1){
@@ -47,7 +48,37 @@ public class Points {
 				points.set(idx, this);
 			}		
 		}
+		
+		@Override
+		public void persist() throws SQLException {
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{this.id});
+			rs.next();
+			
+			if(rs.getBoolean("EXIST")){
+				DBHelper.executeUpdate(String.format("UPDATE %s SET FIELD_ID = ?, SEQ = ?, LAT = ?, LON = ? WHERE ID = ?", TABLE_NAME), new Object[]{ this.fieldId, this.seq, this.lat, this.lon, this.id });//update
+			} else {
+				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, FIELD_ID, SEQ, LAT, LON) VALUES (?, ?, ?, ?, ?)", TABLE_NAME), new Object[]{this.id, this.fieldId, this.seq, this.lat, this.lon });//insert
+			}
+		}
 
+		@Override
+		public void delete() throws SQLException {
+			// TODO Auto-generated method stub
+			
+		}		
+
+		@Override
+		public String validate() throws SQLException {
+			if(this.lat < -90 || this.lat > 90 
+					|| this.lon < -180 || this.lon > 180) return "Invalid coordinates\n-180 < lat < 180, -90 < lon < 90";
+	
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE FIELD_ID = ? AND LAT = ? AND LON = ?", new Object[]{this.fieldId, this.lat, this.lon});
+			rs.next();
+			if(rs.getBoolean("EXIST")) return "There is already such point for this field";
+			
+			return "";
+		}
+		
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -65,10 +96,10 @@ public class Points {
 				return false;
 			return true;
 		}
-
+		
 		@Override
 		public String toString() {
-			return String.format("#%d [%f; %f]", seq, lat, lon);
+			return String.format("[%f; %f]", lat, lon);
 		}		
 	}
 	
@@ -85,14 +116,7 @@ public class Points {
 	
 	public static void saveAll() throws SQLException{
 		for(Point o : points){
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{o.id});
-			rs.next();
-			
-			if(rs.getBoolean("EXIST")){
-				DBHelper.executeUpdate(String.format("UPDATE %s SET FIELD_ID = ?, SEQ = ?, LAT = ?, LON = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.fieldId, o.seq, o.lat, o.lon, o.id });//update
-			} else {
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, FIELD_ID, SEQ, LAT, LON) VALUES (?, ?, ?, ?, ?)", TABLE_NAME), new Object[]{o.id, o.fieldId, o.seq, o.lat, o.lon });//insert
-			}
+			o.save();
 		}
 	}
 	

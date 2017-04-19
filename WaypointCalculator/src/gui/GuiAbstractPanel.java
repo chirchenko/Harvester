@@ -1,7 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -14,34 +14,50 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import domains.DataChangeListener;
-import domains.Fields.Field;
+import domains.PersistentObject;
 import domains.ToolTipRecord;
+import logginig.Logger;
 
 @SuppressWarnings("serial")
-public abstract class GuiAbstractPanel<T> extends JPanel 
+public abstract class GuiAbstractPanel<T extends PersistentObject> extends JPanel 
 							implements DataChangeListener, MouseListener{
 
+	private Logger logger = Logger.getLogger(GuiAbstractPanel.class);
+	
 	private SelectedListener selectedListener;
 	
 	public interface SelectedListener {
 		public void onDoubleClick();
 	}
 	
-	public GuiEntityDialog<Field> entityDialog;
+	protected T emptyEntity;
+	public GuiEntityDialog<T> entityDialog = null;
+	private JScrollPane scrollPane;
 	public JList<T> displayList;
 	
 	protected JButton buttonAdd;
 	protected JButton buttonRemove;
 	protected JButton buttonModify;
 
-	public GuiAbstractPanel(String listName, SelectedListener selectedListener) {
+	public GuiAbstractPanel(String listName, SelectedListener selectedListener, T emptyEntity) {
 		super();
 		this.selectedListener = selectedListener;
+		this.emptyEntity = emptyEntity;
+		entityDialog = assignDialog();
+		initAbstractUI(listName);
+		setPreferredSize(new Dimension(150, 150));
+		
+	    dataChanged();
+	}
+
+	private void initAbstractUI(String listName) {
 		this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createTitledBorder(listName));
         
@@ -51,6 +67,7 @@ public abstract class GuiAbstractPanel<T> extends JPanel
          */
 		this.displayList = new JList<T>(){
 			
+			@Override
 			public String getToolTipText(MouseEvent evt) {
 		        int index = locationToIndex(evt.getPoint());
 		        if(index < 0) return null;
@@ -60,7 +77,7 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 		        }
 		        return item.toString();
 		      }
-			
+
 		};
 		
 		this.displayList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -68,7 +85,7 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 	    this.displayList.setModel(new DefaultListModel<T>());	    
 	    this.displayList.addMouseListener(this);
 	    
-        JScrollPane scrollPane = new JScrollPane(displayList
+        scrollPane = new JScrollPane(displayList
         		, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
         		, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	    this.add(scrollPane, BorderLayout.CENTER);
@@ -91,12 +108,33 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				entityDialog.showDialog(null);
-				try {
-					entityDialog.getEntity().save();
-				} catch (SQLException e1) {
-					//logger.info("Saving " + entity.toSttring());
-					e1.printStackTrace();
+				entityDialog.showDialog(emptyEntity);
+			}
+		});
+		
+		buttonModify.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				entityDialog.showDialog(displayList.getSelectedValue());
+			}
+		});
+		
+		buttonRemove.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for(T entity : displayList.getSelectedValuesList()){
+					try {
+						entity.delete();
+					} catch (SQLException e1) {
+						logger.info("Failed to save record");
+						logger.info(e1);
+						JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(entityDialog),
+								e1.getMessage(),
+							    "Error",
+							    JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -121,11 +159,11 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 	    managePanel.add(buttonModify, c);
 
 	    this.add(managePanel, BorderLayout.SOUTH);
-	    
-	    dataChanged();
 	}
 
 	public abstract void loadData(DefaultListModel<T> model);
+	
+	public abstract GuiEntityDialog<T> assignDialog();
 	
 	public T getSelected() {
 		return displayList.getSelectedValue();
@@ -139,12 +177,8 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 	}
 
 	public void listEnabled(boolean enabled) {
-		for(Component c : getComponents()){
-			c.setEnabled(enabled);
-			for(Component s : getComponents()){
-				s.setEnabled(enabled);
-			}
-		}
+		scrollPane.setEnabled(enabled);
+		displayList.setEnabled(enabled);
 	}
 
 	@Override
@@ -153,10 +187,10 @@ public abstract class GuiAbstractPanel<T> extends JPanel
 			if(this.displayList.getModel().getSize() > 0 
 					&& e.getClickCount()==2 && !e.isConsumed()){
 		    	e.consume();
-		    	selectedListener.onDoubleClick();
+		    	if(selectedListener != null) 
+		    		selectedListener.onDoubleClick();
 		    }
-		}
-				
+		}				
 	}
 
 	@Override

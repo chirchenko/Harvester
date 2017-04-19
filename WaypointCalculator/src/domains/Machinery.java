@@ -17,10 +17,10 @@ public class Machinery {
 	private static List<Machine> machinery = new ArrayList<>();
 	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
-	public static class Machine implements ToolTipRecord{
+	public static class Machine extends PersistentObject implements ToolTipRecord{
 		@XmlTransient
 		public int id;
-		public String name;
+		public String name = "";
 		public double workWidth;
 		public double fuel;
 
@@ -32,6 +32,7 @@ public class Machinery {
 			return this;
 		}
 		
+		@Override
 		public void save() throws SQLException{
 			int idx = machinery.indexOf(this);
 			if(idx == -1){
@@ -40,9 +41,40 @@ public class Machinery {
 			}else{
 				this.id = machinery.get(idx).id;
 				machinery.set(idx, this);
+			}			
+		}
+		
+		@Override
+		public void persist() throws SQLException{
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{this.id});
+			rs.next();
+			
+			if(rs.getBoolean("EXIST")){
+				DBHelper.executeUpdate("UPDATE MACHINERY SET NAME = ?, WORK_WIDTH = ?, FUEL = ? WHERE ID = ?", new Object[]{ this.name, this.workWidth, this.fuel, this.id });//update
+			} else {
+				DBHelper.executeUpdate("INSERT INTO MACHINERY (ID, NAME, WORK_WIDTH, FUEL) VALUES (?, ?, ?, ?)", new Object[]{this.id, this.name, this.workWidth, this.fuel });//insert
 			}
 		}
+		
+		@Override
+		public void delete() throws SQLException {
+			
+		}		
+		
+		@Override
+		public String validate() throws SQLException {
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?", new Object[]{this.name});
+			rs.next();
+			if(rs.getBoolean("EXIST")) return "Entity with this name already exeists";
+			
+			if("".equals(this.name)) return "Name cannot be empty";
+			
+			if(this.fuel == 0.0) return "Fuel consumption cannot be 0.0";
 
+			if(this.workWidth == 0.0) return "Work width cannot be 0.0";
+			return "";
+		}
+		
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == null)
@@ -57,7 +89,7 @@ public class Machinery {
 				return false;
 			return true;
 		}
-
+		
 		@Override
 		public String getTooltip() {
 			return String.format("<html>"
@@ -71,7 +103,7 @@ public class Machinery {
 		@Override
 		public String toString() {
 			return name + ", width=" + workWidth;
-		}		
+		}
 	}
 	
 	public static void addDataChangedListener(DataChangeListener listener){
@@ -93,14 +125,7 @@ public class Machinery {
 	
 	public static void saveAll() throws SQLException{
 		for(Machine o : machinery){
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{o.id});
-			rs.next();
-			
-			if(rs.getBoolean("EXIST")){
-				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ?, WORK_WIDTH = ?, FUEL = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.name, o.workWidth, o.fuel, o.id });//update
-			} else {
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME, WORK_WIDTH, FUEL) VALUES (?, ?, ?, ?)", TABLE_NAME), new Object[]{o.id, o.name, o.workWidth, o.fuel });//insert
-			}
+			o.save();
 		}
 	}
 	

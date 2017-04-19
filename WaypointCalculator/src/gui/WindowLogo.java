@@ -46,6 +46,10 @@ public class WindowLogo extends JWindow implements ActionListener {
 		this.setVisible(true);
 		
 		try {
+			File file = new File("database.db");
+			if(file.exists()){
+				file.delete();
+			}
 			initApplication();
 		} catch (SQLException | IOException e) {
 			logger.info("Application failed to start: " + e.getMessage());

@@ -1,4 +1,4 @@
-package domains;
+ package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,15 +20,15 @@ public class Fields {
 	private static List<Field> 	fields = new ArrayList<>();
 	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
-	public static class Field implements ToolTipRecord{
+	public static class Field extends PersistentObject implements ToolTipRecord{
 		
 		@XmlTransient
 		public int id;
-		public String name;
+		public String name = "";
 		
 		@XmlElement(name="point")
 		@XmlElementWrapper
-		public List<Point> points;
+		public List<Point> points = new ArrayList<>();
 		
 		private Field load(ResultSet rs) throws SQLException{
 			this.id = rs.getInt("ID");			
@@ -37,6 +37,7 @@ public class Fields {
 			return this;
 		}
 		
+		@Override
 		public void save() throws SQLException{
 			int idx = fields.indexOf(this);
 			if(idx == -1){
@@ -45,8 +46,26 @@ public class Fields {
 			}else{
 				this.id = fields.get(idx).id;
 				fields.set(idx, this);
-			}		
-		}			
+			}
+		}
+
+		@Override
+		public void persist() throws SQLException {
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{this.id});
+			rs.next();
+			
+			if(rs.getBoolean("EXIST")){
+				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME), new Object[]{ this.name, this.id });//update
+			} else {
+				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?)", TABLE_NAME), new Object[]{ this.id, this.name });//insert
+			}
+		}
+
+		@Override
+		public void delete() throws SQLException {
+			// TODO Auto-generated method stub
+			
+		}		
 
 		@Override
 		public boolean equals(Object obj) {
@@ -63,6 +82,18 @@ public class Fields {
 			} else if (!name.equals(other.name))
 				return false;
 			return true;
+		}
+		
+		@Override
+		public String validate() throws SQLException {
+			if("".equals(this.name)) return "Name cannot be empty";
+			
+			if(points.size() < 3) return "Field should contain at least 3 points";
+			
+			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE NAME = ?", new Object[]{this.name});
+			rs.next();
+			if(rs.getBoolean("EXIST")) return "Entity with this name already exeists";
+			return "";
 		}
 
 		@Override
@@ -89,15 +120,9 @@ public class Fields {
 	
 	public static void saveAll() throws SQLException{
 		for(Field o : fields){
-			ResultSet rs = DBHelper.executeQuery("SELECT SUM(1) AS EXIST FROM " + TABLE_NAME + " WHERE ID = ?", new Object[]{o.id});
-			rs.next();
-			
-			if(rs.getBoolean("EXIST")){
-				DBHelper.executeUpdate(String.format("UPDATE %s SET NAME = ? WHERE ID = ?", TABLE_NAME), new Object[]{ o.name, o.id });//update
-			} else {
-				DBHelper.executeUpdate(String.format("INSERT INTO %s (ID, NAME) VALUES (?, ?)", TABLE_NAME), new Object[]{ o.id, o.name });//insert
-			}
+			o.save();
 		}
+		notifyListeners();
 	}
 	
 	private static void notifyListeners() {
