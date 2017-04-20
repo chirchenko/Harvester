@@ -4,6 +4,7 @@ import javax.swing.DefaultListModel;
 
 import domains.Machinery;
 import domains.Machinery.Machine;
+import domains.PersistentObject;
 import gui.panel.dialog.EntityDialog;
 import gui.panel.dialog.MachineDialog;
 
@@ -15,10 +16,10 @@ public class MachineListPanel extends AbstractListPanel<Machine> {
 	}
 
 	@Override
-	public void loadData(DefaultListModel<Machine> model) {
+	public void populateListData(DefaultListModel<Machine> model) {
 		model.clear();
-		for (Machine m : Machinery.getMachinery()) {
-			model.addElement(m);
+		for (PersistentObject m : Machinery.getEntities()) {
+			model.addElement((Machine) m);
 		}
 	}
 

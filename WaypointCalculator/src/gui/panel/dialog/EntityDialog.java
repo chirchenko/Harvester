@@ -84,8 +84,12 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 		buttonOk.requestFocus();
 		installEscapeCloseOperation(dialog);
 		
-		JPanel container = new JPanel(new GridBagLayout());
+		/*
+		 * Delegates composition of entity-specific elements to instance
+		 */
 		composeEntityElements(entityPanel, entity);
+		
+		JPanel container = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		gbc.gridy = 1;
@@ -167,7 +171,6 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 			} else if (e.getSource() == buttonCancel) {
 				entity.dispose();
 				closeDialog();
-				dataChangeListener.dataChanged();	///tmp
 				
 			}
 		} catch (SQLException e1) {

@@ -16,6 +16,8 @@ public abstract class PersistentObject implements Cloneable {
 	public abstract void dispose();
 
 	public abstract String validate() throws SQLException;
+	
+	public abstract void loadAll() throws SQLException;
 
 	@Override
 	public PersistentObject clone() {

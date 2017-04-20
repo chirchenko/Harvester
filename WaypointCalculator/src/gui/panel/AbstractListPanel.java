@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -24,6 +25,7 @@ import domains.DataChangeListener;
 import domains.PersistentObject;
 import domains.ToolTipRecord;
 import gui.panel.dialog.EntityDialog;
+import gui.window.WindowMain;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
@@ -58,7 +60,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	    dataChanged();
 	}
 	
-	public abstract void loadData(DefaultListModel<T> model);
+	public abstract void populateListData(DefaultListModel<T> model);
 	
 	public abstract EntityDialog<T> assignDialog();
 	
@@ -137,9 +139,44 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 
 	@Override
 	public void dataChanged() {
-		loadData((DefaultListModel<T>) displayList.getModel());
+		populateListData((DefaultListModel<T>) displayList.getModel());
 	    revalidate();
 		repaint();
+	}
+
+	private void remove(){
+		int cnt = displayList.getSelectedValuesList().size();
+		String elements = displayList.getSelectedValuesList()
+				.stream()
+				.map( e -> e.toString())
+				.collect(Collectors.joining("</li><li>"));
+		
+		Object[] options = {"Ok", "Cancel"};
+		int n = JOptionPane.showOptionDialog(WindowMain.instance,
+		String.format("<html>You are about to delete %d record%s:<br><ul><li>%s</ul></html>"
+				, cnt, cnt > 1 ? "s" : "", elements),
+		"Deleting",
+		JOptionPane.YES_NO_OPTION,
+		JOptionPane.QUESTION_MESSAGE,
+		null,
+		options,
+		options[1]);
+		
+		if(n == JOptionPane.OK_OPTION){		
+			for(T entity : displayList.getSelectedValuesList()){
+				try {
+					entity.delete();
+					entity.loadAll();;
+				} catch (SQLException e1) {
+					logger.info("Failed to delete record");
+					logger.info(e1.getMessage());
+					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(entityDialog),
+							e1.getMessage(),
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -155,19 +192,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 		
 		} else if(source == buttonRemove){
 			
-			for(T entity : displayList.getSelectedValuesList()){
-				try {
-					entity.delete();
-				} catch (SQLException e1) {
-					logger.info("Failed to delete record");
-					logger.info(e1.getMessage());
-					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(entityDialog),
-							e1.getMessage(),
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			
+			remove();			
 		}
 	}
 

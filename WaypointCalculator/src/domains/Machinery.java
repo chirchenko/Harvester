@@ -2,20 +2,19 @@ package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import domains.Machinery.Machine;
 import logginig.Logger;
 import sqlutils.DBHelper;
 
-public class Machinery {
-	private static Logger logger = Logger.getLogger(Machinery.class);
-	public final static String TABLE_NAME = "MACHINERY";
-	
-	private static List<Machine> machinery = new ArrayList<>();
-	private static List<DataChangeListener> listeners = new ArrayList<>();
+public class Machinery extends PersistentContainer<Machine>{
+	public Machinery(){
+		logger = Logger.getLogger(Machinery.class);
+		TABLE_NAME = "MACHINERY";
+		instance = this;
+	}
 	
 	public static class Machine extends PersistentObject implements ToolTipRecord{
 		@XmlTransient
@@ -34,13 +33,13 @@ public class Machinery {
 		
 		@Override
 		public void save() throws SQLException{
-			int idx = machinery.indexOf(this);
+			int idx = entityList.indexOf(this);
 			if(idx == -1){
 				this.id = DBHelper.getNextSequence(Machinery.TABLE_NAME);
-				machinery.add(this);
+				entityList.add(this);
 			}else{
-				this.id = machinery.get(idx).id;
-				machinery.set(idx, this);
+				this.id = entityList.get(idx).id;
+				entityList.set(idx, this);
 			}
 			
 			persist();
@@ -67,6 +66,11 @@ public class Machinery {
 		public void delete() throws SQLException {
 			DBHelper.executeUpdate("DELETE FROM MACHINERY WHERE ID = ?", new Object[]{ this.id });
 		}		
+		
+		@Override
+		public void loadAll() throws SQLException{
+			Machinery.loadAll();
+		}
 		
 		@Override
 		public void dispose() {
@@ -121,37 +125,16 @@ public class Machinery {
 		}
 	}
 	
-	public static void addDataChangedListener(DataChangeListener listener){
-		listeners.add(listener);
-	}
-	
 	public static void loadAll() throws SQLException{
 		logger.info("Loading Machinery...");
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME, WORK_WIDTH, FUEL FROM %s", TABLE_NAME), null);
 		
-		machinery.clear();
+		entityList.clear();
 		while(rs.next()){
-			machinery.add(new Machine().load(rs));
+			entityList.add(new Machine().load(rs));
 		}
 		
-		logger.info(String.format("\tLoaded %d machines", machinery.size()));
+		logger.info(String.format("\tLoaded %d machines", entityList.size()));
 		notifyListeners();	
 	}
-	
-	public static void saveAll() throws SQLException{
-		for(Machine o : machinery){
-			o.save();
-		}
-	}
-	
-	private static void notifyListeners() {
-		for(DataChangeListener l : listeners){
-			l.dataChanged();
-		}
-	}
-
-	public static List<Machine> getMachinery() {
-		return machinery;
-	}
-	
 }

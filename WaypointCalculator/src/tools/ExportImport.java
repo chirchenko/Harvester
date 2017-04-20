@@ -13,6 +13,7 @@ import domains.Fields;
 import domains.Fields.Field;
 import domains.Machinery;
 import domains.Machinery.Machine;
+import domains.PersistentObject;
 import logginig.Logger;
 
 public class ExportImport {
@@ -24,7 +25,7 @@ public class ExportImport {
 					.newInstance(Domains.class)
 					.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(new Domains(Fields.getFields(), Machinery.getMachinery()), file);
+			jaxbMarshaller.marshal(new Domains(Fields.getEntities(), Machinery.getEntities()), file);
 		}catch(JAXBException e){
 			logger.info(e.getCause().getMessage());
 			throw e;
@@ -38,7 +39,7 @@ public class ExportImport {
 		if(domains.machines != null){
 			
 			logger.info("\tImporting Machines");
-			for(Machine m : domains.machines){
+			for(PersistentObject m : domains.machines){
 				logger.info("\t\tImporting " + m);
 				m.save();
 			}
@@ -47,8 +48,8 @@ public class ExportImport {
 		if(domains.fields != null){
 
 			logger.info("\tImporting Fields");
-			for(Field f : domains.fields){
-				if(f.points == null){
+			for(PersistentObject f : domains.fields){
+				if(((Field) f).points == null){
 					logger.info("Field " + f + " has no points. Skipping");
 					continue;
 				};

@@ -20,7 +20,7 @@ public class PointListPanel extends AbstractListPanel<Point> {
 	}
 
 	@Override
-	public void loadData(DefaultListModel<Point> model) {
+	public void populateListData(DefaultListModel<Point> model) {
 		model.clear();
 		for (Point p : Points.getPoints(emptyEntity.fieldId)) {
 			model.addElement(p);

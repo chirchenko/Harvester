@@ -9,17 +9,18 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
+import domains.Machinery.Machine;
 import domains.Points.Point;
 import logginig.Logger;
 import sqlutils.DBHelper;
 
-public class Fields {
-	private static Logger logger = Logger.getLogger(Fields.class);
-	public final static String TABLE_NAME = "FIELDS";
+public class Fields extends PersistentContainer<Machine>{
 
-	private static List<Field> fields = new ArrayList<>();
-	private static List<DataChangeListener> listeners = new ArrayList<>();
-
+	public Fields(){
+		logger = Logger.getLogger(Fields.class);
+		TABLE_NAME = "FIELDS";
+	}
+	
 	public static class Field extends PersistentObject implements ToolTipRecord {
 
 		@XmlTransient
@@ -39,13 +40,13 @@ public class Fields {
 
 		@Override
 		public void save() throws SQLException {
-			int idx = fields.indexOf(this);
+			int idx = entityList.indexOf(this);
 			if (idx == -1) {
 				this.id = DBHelper.getNextSequence(Fields.TABLE_NAME);
-				fields.add(this);
+				entityList.add(this);
 			} else {
-				this.id = fields.get(idx).id;
-				fields.set(idx, this);
+				this.id = entityList.get(idx).id;
+				entityList.set(idx, this);
 			}
 
 			this.persist();
@@ -81,11 +82,16 @@ public class Fields {
 		@Override
 		public void delete() throws SQLException {
 			DBHelper.executeUpdate("DELETE FROM FIELDS WHERE ID = ?", new Object[] { this.id });
+		}	
+		
+		@Override
+		public void loadAll() throws SQLException{
+			Fields.loadAll();
 		}
 
 		@Override
 		public void dispose() {
-			for (Point p : Points.getPoints(this.id)) {
+			for (PersistentObject p : Points.getPoints(this.id)) {
 				points.remove(p);
 			}
 		}
@@ -123,44 +129,23 @@ public class Fields {
 					return "Entity with this name already exeists";
 			}
 			return "";
-		}		
+		}	
 
 		@Override
 		public String toString() {
 			return name;
 		}
 	}
-
-	public static void addDataChangedListener(DataChangeListener listener) {
-		listeners.add(listener);
-	}
-
+	
 	public static void loadAll() throws SQLException {
 		logger.info("Loading Fields...");
 		ResultSet rs = DBHelper.executeQuery(String.format("SELECT ID, NAME FROM %s", TABLE_NAME), null);
 
-		fields.clear();
+		entityList.clear();
 		while (rs.next()) {
-			fields.add(new Field().load(rs));
+			entityList.add(new Field().load(rs));
 		}
-		logger.info(String.format("\tLoaded %d fields", fields.size()));
+		logger.info(String.format("\tLoaded %d fields", entityList.size()));
 		notifyListeners();
-	}
-
-	public static void saveAll() throws SQLException {
-		for (Field o : fields) {
-			o.save();
-		}
-		notifyListeners();
-	}
-
-	private static void notifyListeners() {
-		for (DataChangeListener l : listeners) {
-			l.dataChanged();
-		}
-	}
-
-	public static List<Field> getFields() {
-		return fields;
 	}
 }

@@ -5,6 +5,7 @@ import javax.swing.DefaultListModel;
 import domains.DataChangeListener;
 import domains.Fields;
 import domains.Fields.Field;
+import domains.PersistentObject;
 import gui.panel.dialog.EntityDialog;
 import gui.panel.dialog.FieldDialog;
 
@@ -16,10 +17,10 @@ public class FieldListPanel extends AbstractListPanel<Field> implements DataChan
 	}
 
 	@Override
-	public void loadData(DefaultListModel<Field> model) {
+	public void populateListData(DefaultListModel<Field> model) {
 		model.clear();
-		for (Field m : Fields.getFields()) {
-			model.addElement(m);
+		for (PersistentObject m : Fields.getEntities()) {
+			model.addElement((Field) m);
 		}
 	}
 

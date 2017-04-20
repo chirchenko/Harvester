@@ -46,6 +46,8 @@ public class WindowMain extends JFrame{
 	final static int windowWidth = 1280;
 	final static int windowhHeight = 924;
 	
+	public static WindowMain instance;
+	
 	private FieldListPanel fieldList;
 	private MachineListPanel machineList;
 	private DisplayPanel display;	
@@ -58,7 +60,7 @@ public class WindowMain extends JFrame{
 	public static double workWidth = 0;
 	
 	public WindowMain() throws HeadlessException {
-		super();	
+		super();
 		File iconFile = new File(App.APP_ICON_PATH);
         if(iconFile.exists()){
         	Image icon;
@@ -76,6 +78,8 @@ public class WindowMain extends JFrame{
 			logger.info("Failed to initialize interface");
 			logger.info(e);
 		}	
+		
+		WindowMain.instance = this;
 	}
 
 	public void initUI() throws InstantiationException, IllegalAccessException {    
@@ -87,6 +91,7 @@ public class WindowMain extends JFrame{
         JPanel sidePanel = new JPanel(new BorderLayout());
              
         fieldList = new FieldListPanel("Fields", () -> {
+        	
 				display.field = fieldList.getSelected();
 		    	
 		    	Polygon polygon = new Polygon(display.field.points);
@@ -99,9 +104,11 @@ public class WindowMain extends JFrame{
 				
 				display.getCanvas().render();
 				display.label.setText("Now please select harvester");
+				
 		});
         
         machineList = new MachineListPanel("Harvesters",() -> {
+        	
         	display.machine = machineList.getSelected(); 		
     		
     		logger.info("Invoking building waypoints"); 
@@ -129,6 +136,7 @@ public class WindowMain extends JFrame{
 						    				, distance, turns, totalConsumption, fuelConsumption);
     		logger.info(result);
     		display.label.setText(result);
+    		
         });
         display = new DisplayPanel();    
         console = new ConsolePanel();       

@@ -2,20 +2,20 @@ package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import domains.Points.Point;
 import logginig.Logger;
 import sqlutils.DBHelper;
 
-public class Points {
-	private static Logger logger = Logger.getLogger(Points.class);
-	public final static String TABLE_NAME = "POINTS";
-	
-	private static List<Point> points = new ArrayList<>();;
+public class Points extends PersistentContainer<Point>{
+	public Points(){
+		logger = Logger.getLogger(Machinery.class);
+		TABLE_NAME = "POINTS";
+	}
 	
 	public static class Point extends PersistentObject {
 		
@@ -39,13 +39,13 @@ public class Points {
 		
 		@Override
 		public void save() throws SQLException{
-			int idx = points.indexOf(this);
+			int idx = entityList.indexOf(this);
 			if(idx == -1){
 				this.id = DBHelper.getNextSequence(Points.TABLE_NAME);
-				points.add(this);
+				entityList.add(this);
 			}else{
-				this.id = points.get(idx).id;
-				points.set(idx, this);
+				this.id = entityList.get(idx).id;
+				entityList.set(idx, this);
 			}		
 		}
 		
@@ -70,6 +70,11 @@ public class Points {
 		public void delete() throws SQLException {
 			DBHelper.executeUpdate("DELETE FROM POINTS WHERE ID = ?", new Object[]{ this.id });
 		}
+
+		@Override
+		public void loadAll() throws SQLException {
+			Points.loadAll();
+		}	
 		
 		@Override
 		public void dispose() {
@@ -109,28 +114,23 @@ public class Points {
 		@Override
 		public String toString() {
 			return String.format("[%f; %f]", lat, lon);
-		}			
+		}		
 	}
 	
 	public static void loadAll() throws SQLException{
 		logger.info("Loading " + "Points" + "...");
 		ResultSet rs = DBHelper.executeQuery("SELECT ID, FIELD_ID, SEQ, LAT, LON FROM POINTS", null);
 		
-		points.clear();
+		entityList.clear();
 		while(rs.next()){
-			points.add(new Point().load(rs));
+			entityList.add(new Point().load(rs));
 		}
-		logger.info(String.format("\tLoaded %d points", points.size()));
-	}
-	
-	public static void saveAll() throws SQLException{
-		for(Point o : points){
-			o.save();
-		}
+		logger.info(String.format("\tLoaded %d points", entityList.size()));
 	}
 	
 	public static List<Point> getPoints(int fieldId){
-		return points.stream()
+		return entityList.stream()
+				.map(r -> (Point) r)
 				.filter(t -> t.fieldId == fieldId)
 				.collect(Collectors.toList());
 	}
