@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 
 import domains.Points.Point;
 import logginig.Logger;
@@ -22,8 +21,6 @@ public class Fields {
 
 	public static class Field extends PersistentObject implements ToolTipRecord {
 
-		@XmlTransient
-		public int id;
 		public String name = "";
 
 		@XmlElement(name = "point")
@@ -56,11 +53,6 @@ public class Fields {
 				point.save();
 				point.persist();
 			}
-		}
-
-		@Override
-		public int getId() {
-			return this.id;
 		}
 
 		@Override

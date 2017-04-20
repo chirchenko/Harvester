@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import logginig.Logger;
 import sqlutils.DBHelper;
 
@@ -18,8 +16,7 @@ public class Machinery {
 	private static List<DataChangeListener> listeners = new ArrayList<>();
 	
 	public static class Machine extends PersistentObject implements ToolTipRecord{
-		@XmlTransient
-		public int id;
+		
 		public String name = "";
 		public double workWidth;
 		public double fuel;
@@ -44,11 +41,6 @@ public class Machinery {
 			}
 			
 			persist();
-		}
-		
-		@Override
-		public int getId(){
-			return this.id;
 		}
 		
 		@Override

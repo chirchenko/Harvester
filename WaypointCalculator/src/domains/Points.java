@@ -20,8 +20,6 @@ public class Points {
 	public static class Point extends PersistentObject {
 		
 		@XmlTransient
-		public int id;
-		@XmlTransient
 		public int  fieldId;
 		@XmlTransient
 		public int seq;
@@ -47,11 +45,6 @@ public class Points {
 				this.id = points.get(idx).id;
 				points.set(idx, this);
 			}		
-		}
-		
-		@Override
-		public int getId(){
-			return this.id;
 		}
 		
 		@Override
