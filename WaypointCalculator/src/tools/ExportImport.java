@@ -12,7 +12,6 @@ import domains.Domains;
 import domains.Fields;
 import domains.Fields.Field;
 import domains.Machinery;
-import domains.Machinery.Machine;
 import domains.PersistentObject;
 import logginig.Logger;
 

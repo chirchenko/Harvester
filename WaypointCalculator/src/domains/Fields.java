@@ -8,16 +8,21 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
-import domains.Machinery.Machine;
+import domains.Fields.Field;
 import domains.Points.Point;
 import logginig.Logger;
 import sqlutils.DBHelper;
 
-public class Fields extends PersistentContainer<Machine>{
+public class Fields extends PersistentContainer<Field>{
 
-	public Fields(){
-		logger = Logger.getLogger(Fields.class);
-		TABLE_NAME = "FIELDS";
+	public final static String TABLE_NAME = "FIELDS";
+	private static List<Field> entityList = new ArrayList<>();
+	
+	public static Logger logger = Logger.getLogger(Fields.class);
+	
+	public Fields() throws SQLException{
+		instance = this;
+		Fields.loadAll();
 	}
 	
 	public static class Field extends PersistentObject implements ToolTipRecord {
@@ -104,7 +109,12 @@ public class Fields extends PersistentContainer<Machine>{
 				return false;
 			return true;
 		}
-
+		
+//		@Override
+//		public PersistentContainer<?> getInstance() {
+//			return Fields.instance;
+//		}
+		
 		@Override
 		public String validate() throws SQLException {
 			if ("".equals(this.name))
@@ -127,6 +137,10 @@ public class Fields extends PersistentContainer<Machine>{
 		public String toString() {
 			return name;
 		}
+	}
+	
+	public static List<Field> getEntities() {
+		return entityList;
 	}
 	
 	public static void loadAll() throws SQLException {

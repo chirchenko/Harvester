@@ -2,6 +2,7 @@ package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,9 +13,16 @@ import logginig.Logger;
 import sqlutils.DBHelper;
 
 public class Points extends PersistentContainer<Point>{
-	public Points(){
-		logger = Logger.getLogger(Machinery.class);
-		TABLE_NAME = "POINTS";
+
+	private static List<Point> entityList = new ArrayList<>();
+
+	public final static String TABLE_NAME = "POINTS";
+
+	public static Logger logger = Logger.getLogger(Points.class);
+	
+	public Points() throws SQLException{
+		instance = this;
+		Points.loadAll();
 	}
 	
 	public static class Point extends PersistentObject {
@@ -74,6 +82,11 @@ public class Points extends PersistentContainer<Point>{
 
 		}	
 				
+//		@Override
+//		public PersistentContainer<?> getInstance() {
+//			return Points.instance;
+//		}
+
 		@Override
 		public String validate() throws SQLException {
 			if(this.lat < -90 || this.lat > 90 
@@ -110,8 +123,12 @@ public class Points extends PersistentContainer<Point>{
 		}		
 	}
 	
+	public static List<Point> getEntities() {
+		return entityList;
+	}
+	
 	public static void loadAll() throws SQLException{
-		logger.info("Loading " + "Points" + "...");
+		logger.info("Loading Points" + "...");
 		ResultSet rs = DBHelper.executeQuery("SELECT ID, FIELD_ID, SEQ, LAT, LON FROM POINTS", null);
 		
 		entityList.clear();

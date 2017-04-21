@@ -143,6 +143,7 @@ public class DBHelper {
 	}
 
 	public static int getCurrentSequence(String tableName) throws SQLException {
+		if(tableName == null) logger.info("Empty table name");
 		int res = -1;
 		Connection conn = getConnection();
 		try {
