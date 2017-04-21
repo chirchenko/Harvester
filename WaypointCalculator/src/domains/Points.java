@@ -20,8 +20,6 @@ public class Points extends PersistentContainer<Point>{
 	public static class Point extends PersistentObject {
 		
 		@XmlTransient
-		public int id;
-		@XmlTransient
 		public int  fieldId;
 		@XmlTransient
 		public int seq;
@@ -47,11 +45,6 @@ public class Points extends PersistentContainer<Point>{
 				this.id = entityList.get(idx).id;
 				entityList.set(idx, this);
 			}		
-		}
-		
-		@Override
-		public int getId(){
-			return this.id;
 		}
 		
 		@Override

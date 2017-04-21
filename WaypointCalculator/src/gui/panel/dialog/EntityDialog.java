@@ -152,17 +152,10 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
 				}else{
-					if(entity.getId() == 0){
-						logger.info("Creating new entity " + entity);
-						entity.save();
-						
-						logger.info("\tEntity created");
-					}else{
-						logger.info("Modifying entity " + entity);
-						entity.save();
-						
-						logger.info("\nEntity changed");
-					}
+					boolean zeroId = entity.id == 0;
+					logger.info(zeroId ? "Creating new entity " : "Modifying entity " + entity);
+					entity.save();					
+					logger.info(zeroId ? "\tEntity created" : "\nEntity changed");					
 					
 					dataChangeListener.dataChanged();					
 					closeDialog();

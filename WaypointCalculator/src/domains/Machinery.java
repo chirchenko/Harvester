@@ -3,9 +3,6 @@ package domains;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.xml.bind.annotation.XmlTransient;
-
-import domains.Machinery.Machine;
 import logginig.Logger;
 import sqlutils.DBHelper;
 
@@ -17,8 +14,7 @@ public class Machinery extends PersistentContainer<Machine>{
 	}
 	
 	public static class Machine extends PersistentObject implements ToolTipRecord{
-		@XmlTransient
-		public int id;
+		
 		public String name = "";
 		public double workWidth;
 		public double fuel;
@@ -43,11 +39,6 @@ public class Machinery extends PersistentContainer<Machine>{
 			}
 			
 			persist();
-		}
-		
-		@Override
-		public int getId(){
-			return this.id;
 		}
 		
 		@Override

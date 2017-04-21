@@ -2,10 +2,11 @@ package domains;
 
 import java.sql.SQLException;
 
-public abstract class PersistentObject implements Cloneable {
-	public int id;
+import javax.xml.bind.annotation.XmlTransient;
 
-	public abstract int getId();
+public abstract class PersistentObject implements Cloneable {
+	@XmlTransient
+	public int id;
 
 	public abstract void save() throws SQLException;
 
