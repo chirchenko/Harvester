@@ -2,6 +2,8 @@ package domains;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -10,10 +12,16 @@ import logginig.Logger;
 import sqlutils.DBHelper;
 
 public class Machinery extends PersistentContainer<Machine>{
-	public Machinery(){
-		logger = Logger.getLogger(Machinery.class);
-		TABLE_NAME = "MACHINERY";
+
+	private static List<Machine> entityList = new ArrayList<>();
+	
+	public final static String TABLE_NAME = "MACHINERY";
+	
+	public static Logger logger = Logger.getLogger(Machinery.class);
+	
+	public Machinery() throws SQLException{
 		instance = this;
+		Machinery.loadAll();
 	}
 	
 	public static class Machine extends PersistentObject implements ToolTipRecord{
@@ -35,7 +43,7 @@ public class Machinery extends PersistentContainer<Machine>{
 		public void save() throws SQLException{
 			int idx = entityList.indexOf(this);
 			if(idx == -1){
-				this.id = DBHelper.getNextSequence(Machinery.TABLE_NAME);
+				this.id = DBHelper.getNextSequence(TABLE_NAME);
 				entityList.add(this);
 			}else{
 				this.id = entityList.get(idx).id;
@@ -77,6 +85,11 @@ public class Machinery extends PersistentContainer<Machine>{
 			//Nothing to dispose
 		}
 		
+//		@Override
+//		public PersistentContainer<?> getInstance() {
+//			return Machinery.instance;
+//		}
+
 		@Override
 		public String validate() throws SQLException {
 			if("".equals(this.name)) return "Name cannot be empty";
@@ -123,6 +136,10 @@ public class Machinery extends PersistentContainer<Machine>{
 		public String toString() {
 			return name + ", width=" + workWidth;
 		}
+	}
+	
+	public static List<Machine> getEntities() {
+		return entityList;
 	}
 	
 	public static void loadAll() throws SQLException{

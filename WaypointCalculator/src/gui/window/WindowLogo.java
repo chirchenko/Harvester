@@ -63,9 +63,9 @@ public class WindowLogo extends JWindow implements ActionListener {
 		DBHelper.checkDB();
 
 		logger.info("Loading database");
-		Points.loadAll();
-		Machinery.loadAll();
-		Fields.loadAll();
+		new Points();
+		new Fields();
+		new Machinery();
 		
 		logger.info("Application data ready");
 		logger.info("Developed by Oleksii Polishchuk");
