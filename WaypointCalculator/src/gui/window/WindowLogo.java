@@ -45,10 +45,13 @@ public class WindowLogo extends JWindow implements ActionListener {
 		this.setSize((int)width, (int)height);
 		this.setVisible(true);
 		
+		boolean deleteDBonStart = false;	//tmp
 		try {
-			File file = new File("database.db");
-			if(file.exists()){
-				file.delete();
+			if(deleteDBonStart){
+				File file = new File("database.db");
+				if(file.exists()){
+					file.delete();
+				}
 			}
 			initApplication();
 		} catch (SQLException | IOException e) {
