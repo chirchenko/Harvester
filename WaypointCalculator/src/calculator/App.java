@@ -4,10 +4,12 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Properties;
 
 import gui.window.WindowLogo;
 import logginig.AbstractLogger.LogLevel;
@@ -25,6 +27,8 @@ public class App{
 	public static final String APP_RES_DIR = "res";
 	
 	public static final boolean SHOW_POINT_TEXT = true;
+	
+	public static Properties config = new Properties();
 	
 	public static void main(String[] args) throws IOException{	
 		String logFileName = "log.txt";
@@ -49,6 +53,11 @@ public class App{
 			}	
         	logger.info("\t" + relative);
         }
+        
+        InputStream input = App.class.getClassLoader().getResourceAsStream("/app.properties");
+//        if(input != null) {
+            config.load(input);
+//        }
 		
 		new WindowLogo();					
 	}
