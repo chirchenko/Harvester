@@ -2,28 +2,27 @@
 <project name="harvester" basedir="." default="run">
 	<property file="build.properties" />
 	
-	<path id="build-classpath">
-		<fileset dir="${lib.dir}">
-			<include name="*.jar"/>
-		</fileset>
-		<pathelement path="${classes.dir}"/>
-	</path>
-	
-	<path id="build-jar-classpath">
-		<fileset dir="${build.dir}" includes="${lib.dir}/*.jar" excludes="${lib.dir}/${name}*.jar"/>
-	</path>
-	
+	<!--ZIP-->
 	<target name="zip" description="Archives distributive" depends="jar">
 		<zip destfile="${build.dir}/${name}_v${version}.zip"
 			basedir="${build.dir}" />
 		
 		<delete includeemptydirs="true" dir="${build.dir}" excludes="*.zip" />	
 	</target>
-	
+
+	<!--RUN-->
 	<target name="run" depends="jar" description="Run program">
 		<property name="exec.path" location="${build.dir}/${name}.bat"/>
 		<exec dir="${build.dir}" executable="${exec.path}" vmlauncher="true"/>
 	</target>
+
+	<!--JAR-->
+	<path id="build-jar-classpath">
+		<fileset dir="${build.dir}" includes="${lib.dir}/*.jar" excludes="${lib.dir}/${name}*.jar"/>
+		<fileset dir="/">
+			<include name="*.properties"/>
+		</fileset>
+	</path>
 
 	<target name="jar" description="Pack into jar file" depends="copy-dependancies">
 		<mkdir dir="${build.dir}"/>
@@ -49,7 +48,8 @@
 			<fileset dir="${build.dir}" includes="*.jar"/>
 		</move>
 	</target>
-		
+
+	<!--COPY_DEPENDANCIES-->
 	<target name="copy-dependancies" depends="build" description = "Copy required resources">		
 		<copy todir="${build.dir}" >  
 			<fileset dir="">
@@ -63,7 +63,18 @@
 		
 		<echo file="${build.dir}/${name}.bat">java -Dfile.encoding=UTF8 -jar ${lib.dir}\${name}.jar</echo>
 	</target>
-		
+
+	<!--BUILD-->
+	<path id="build-classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="/">
+			<include name="*.properties"/>
+		</fileset>
+		<pathelement path="${classes.dir}"/>
+	</path>
+
 	<target name="build" description="Create class files" depends="clean">
 		<mkdir dir="${classes.dir}"/>
 		<javac destdir="${classes.dir}" source="1.8" target="1.8" includeantruntime="false" encoding="UTF-8">
@@ -71,7 +82,8 @@
 			<classpath refid="build-classpath"/>
 		</javac>
 	</target>
-	 
+
+	<!--CLEAN-->
 	<target name="clean" description="Clean output directories">
 		<delete dir="${classes.dir}" failonerror="false" />
 		<delete dir="${build.dir}" failonerror="false" />		

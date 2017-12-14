@@ -40,7 +40,7 @@ public class App{
 		Logger.subscribe(new PrintStreamLogger(System.out));
 		Logger.subscribe(new PrintStreamLogger(new PrintStream(logFile)));
 		
-		ClassLoader cl = ClassLoader.getSystemClassLoader();
+		/*ClassLoader cl = App.class.getClassLoader();
         URL[] urls = ((URLClassLoader)cl).getURLs();
 
         logger.info("Class-path:");
@@ -52,7 +52,7 @@ public class App{
 				//am I bad person?
 			}	
         	logger.info("\t" + relative);
-        }
+        }*/
         
         InputStream input = App.class.getClassLoader().getResourceAsStream("/app.properties");
 //        if(input != null) {
