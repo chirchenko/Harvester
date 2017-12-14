@@ -17,6 +17,7 @@ import javax.xml.bind.JAXBException;
 
 import calculator.App;
 import logginig.Logger;
+import tools.Config;
 import tools.ExportImport;
 
 public class DBHelper {
@@ -208,7 +209,7 @@ public class DBHelper {
 			}
 
 			logger.info("Importing preset");
-			String filePath = App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/initial.xml";
+			String filePath = App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/initial.xml";
 			File file = new File(filePath);
 			if (file.exists()) {
 				try {

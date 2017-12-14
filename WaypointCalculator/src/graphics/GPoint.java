@@ -35,7 +35,7 @@ public class GPoint extends Point implements CanvasObject {
 		g2.setPaint(color);
 		g2.fill(new Ellipse2D.Double(this.getX() - size/2, this.getY() - size/2, size, size));
 		
-		if(Boolean.valueOf(App.config.getProperty("SHOW_POINT_TEXT", "true"))){
+		if(App.config.getBoolean("graphics.point.captions", "true")){
 			g2.setPaint(Color.LIGHT_GRAY);
 			int indentX = 10, indentY = -10;
 			g2.drawString(point.toString(), x + indentX, y + indentY);

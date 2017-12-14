@@ -7,6 +7,7 @@ import calculator.App;
 import geometry.Point;
 import gui.DisplayPanel;
 import logginig.Logger;
+import tools.Config;
 import tools.GoogleTools;
 import tools.IOTools;
 
@@ -24,7 +25,8 @@ public class Map{
 	 * @param polygon
 	 */
 	public Map(Dimention ovf, Dimension canvasSize, DisplayPanel display) {				
-		image = IOTools.getMapImage(GoogleTools.URL_PATTERN, ovf, canvasSize, display.zoom, App.APP_BLANK_MAP);		
+		image = IOTools.getMapImage(GoogleTools.URL_PATTERN, ovf, canvasSize, display.zoom
+				, App.config.getString("resource.image.emptymap", Config.APP_BLANK_MAP));		
 
 		Point center = ovf.getCenter(); 
 		if(image != null) {

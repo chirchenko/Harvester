@@ -25,12 +25,14 @@ import domains.Machinery;
 import domains.Points;
 import logginig.AbstractLogger.LogLevel;
 import sqlutils.DBHelper;
+import tools.Config;
+import tools.IOTools;
 import logginig.LogListener;
 import logginig.Logger;
 
 @SuppressWarnings("serial")
 public class WindowLogo extends JWindow implements ActionListener {
-	private String imagePath = App.APP_LOGO_IMAGE;
+	private String imagePath = App.config.getString("resource.image.logo", Config.APP_LOGO_IMAGE);
 	private StatusLabel label;
 	
 	private static Logger logger = Logger.getLogger(WindowLogo.class);
@@ -93,13 +95,9 @@ public class WindowLogo extends JWindow implements ActionListener {
 	private void initIface(double width, double height){
 		this.setLayout(new BorderLayout());
 		
-		Image image = null; 
-		try {
-			image = ImageIO.read(new File(imagePath));
-			image = image.getScaledInstance((int) width, (int) height, Image.SCALE_SMOOTH);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Image image = IOTools.readImageFromUrl(imagePath);
+		image = image.getScaledInstance((int) width, (int) height, Image.SCALE_SMOOTH);
+
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(237, 237, 237));
 		

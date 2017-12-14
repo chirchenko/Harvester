@@ -37,7 +37,9 @@ import gui.panel.FieldListPanel;
 import gui.panel.MachineListPanel;
 import logginig.Logger;
 import logic.WaypointFinder;
+import tools.Config;
 import tools.ExportImport;
+import tools.IOTools;
 
 @SuppressWarnings("serial")
 public class WindowMain extends JFrame{
@@ -61,16 +63,8 @@ public class WindowMain extends JFrame{
 	
 	public WindowMain() throws HeadlessException {
 		super();
-		File iconFile = new File(App.APP_ICON_PATH);
-        if(iconFile.exists()){
-        	Image icon;
-			try {
-				icon = ImageIO.read(iconFile);
-	        	setIconImage(icon);    
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}    	        
-        }
+    	Image icon = IOTools.readImageFromUrl(App.config.getString("resource.image.icon", Config.APP_ICON_PATH));
+    	setIconImage(icon); 
         
 		try {
 			initUI();
@@ -162,9 +156,12 @@ public class WindowMain extends JFrame{
 	}
 
 	private void runExport() {
-		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
+		JFileChooser fileChooser = new JFileChooser(
+				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)));
 		fileChooser.setDialogTitle("Export to");
-		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
+		fileChooser.setSelectedFile(
+				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)
+						+ "/export.xml"));
 		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -182,9 +179,13 @@ public class WindowMain extends JFrame{
 	}
 
 	private void runImport() {
-		JFileChooser fileChooser = new JFileChooser(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR));
+		JFileChooser fileChooser = new JFileChooser(
+				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)));
+		
 		fileChooser.setDialogTitle("Import from");
-		fileChooser.setSelectedFile(new File(App.APP_RES_DIR + "/" + App.APP_EXPORT_DIR + "/export.xml"));
+		fileChooser.setSelectedFile(
+				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/export.xml"));
+		
 		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
 		logger.info("Import data");

@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,6 +21,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import calculator.App;
+import tools.Config;
+import tools.IOTools;
 
 @SuppressWarnings("serial")
 public class WindowAbout extends JFrame {
@@ -38,16 +41,8 @@ public class WindowAbout extends JFrame {
 		aboutLabel.setFont(new Font("Consolas", Font.BOLD, 16));
 		aboutLabel.setHorizontalTextPosition(0);
 		
-		File iconFile = new File(App.APP_ICON_PATH);
-		Image icon = null;
-        if(iconFile.exists()){
-			try {
-				icon = ImageIO.read(iconFile);
-	        	setIconImage(icon);    
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}    	        
-        }
+		BufferedImage icon = IOTools.readImageFromUrl(App.config.getString("resource.image.icon", Config.APP_ICON_PATH));
+    	setIconImage(icon); 
 
 		JLabel iconLabel = null;
         if(icon != null){

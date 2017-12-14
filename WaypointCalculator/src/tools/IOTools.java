@@ -46,13 +46,13 @@ public class IOTools {
 	
 	/** Returns an ImageIcon, or null if the path was invalid. 
 	 * @throws IOException */
-	private static BufferedImage readImageFromUrl(String url){
+	public static BufferedImage readImageFromUrl(String url){
 	    if (url != null) {
 	        try {
 	        	if(url.startsWith("http")){
 	        		return ImageIO.read(new URL(url));
 	        	}else{
-	        		return ImageIO.read(new File(url));
+	        		return ImageIO.read(IOTools.class.getClassLoader().getResourceAsStream(url));
 	        	}				
 			} catch (IOException e) {
 				logger.info("Cannot read URL[" + new File(url) + "]: " + e.getMessage());

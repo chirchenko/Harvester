@@ -25,6 +25,7 @@ import graphics.GPoint;
 import graphics.GPolygon;
 import graphics.GSegment;
 import logginig.Logger;
+import tools.Config;
 import tools.IOTools;
 
 @SuppressWarnings("serial")
@@ -53,7 +54,8 @@ public class CanvasPanel extends JPanel {
 		setLayout(new BorderLayout());
 		this.setBackground(Color.LIGHT_GRAY);
 
-		defaultImage = IOTools.getMapImage("", null, null, 0, App.APP_BLANK_MAP);
+		defaultImage = IOTools.getMapImage("", null, null, 0
+				, App.config.getString("resource.image.emptymap", Config.APP_BLANK_MAP));
 		render();
 	}
 
