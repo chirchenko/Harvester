@@ -73,13 +73,19 @@ public class WindowLogo extends JWindow implements ActionListener {
 		new Machinery();
 		
 		logger.info("Application data ready");
+
+		/*
+		 * Прошу не змінювати і не видаляти наступний текст(копірайт) без відома автора.
+		 * Це все ж таки моя робота, зроблена з альтруыстичних міркувань.
+		 * Користуйтеся нею на на здоров`я. Буду дуже радий якщо ця робота принесе користь.
+		 * З повагою, Олексій
+		 */
 		logger.info("Developed by Oleksii Polishchuk");
 		Logger.unsubscribe(label);
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -96,7 +102,11 @@ public class WindowLogo extends JWindow implements ActionListener {
 		this.setLayout(new BorderLayout());
 		
 		Image image = IOTools.readImageFromUrl(imagePath);
-		image = image.getScaledInstance((int) width, (int) height, Image.SCALE_SMOOTH);
+		if (image != null) {
+			image = image.getScaledInstance((int) width, (int) height, Image.SCALE_SMOOTH);
+			this.add(new ImagePanel(image), BorderLayout.CENTER);
+		}
+
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(237, 237, 237));
@@ -106,8 +116,7 @@ public class WindowLogo extends JWindow implements ActionListener {
 		label.setPreferredSize(new Dimension((int)( width - button.getPreferredSize().getWidth()-10), (int )label.getPreferredSize().getHeight()));
 		panel.add(label);
 		panel.add(button);
-		
-		this.add(new ImagePanel(image), BorderLayout.CENTER);
+
 		this.add(panel, BorderLayout.SOUTH);
 		
 		button.addActionListener(this);

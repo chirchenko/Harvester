@@ -15,7 +15,7 @@ public class Config extends Properties {
 	public static String APP_BLANK_MAP = "img/blank.png";
 	public static String APP_LOGO_IMAGE = "img/logo.jpg";
 	public static String APP_EXPORT_DIR = "export";
-	public static String APP_RES_DIR = "res";
+	public static String APP_SCRIPT_DIR = "scripts";
 
 	public Config() {
 		super();

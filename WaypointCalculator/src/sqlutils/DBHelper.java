@@ -1,21 +1,21 @@
 package sqlutils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
 import calculator.App;
+import com.sun.istack.internal.NotNull;
 import logginig.Logger;
 import tools.Config;
 import tools.ExportImport;
@@ -24,7 +24,6 @@ public class DBHelper {
 	private static Connection connection = null;
 	private static Logger logger = Logger.getLogger(DBHelper.class);
 
-	private final static String SCRIPT_DIR = "res/scripts";
 	private final static String SQL_DRIVER = "org.sqlite.JDBC";
 	private final static String SQL_DB_JDBC = "jdbc:sqlite:";
 	private final static String SQL_DB_NAME = "database.db";
@@ -127,19 +126,17 @@ public class DBHelper {
 	}
 
 	public static String getSqlText(String path) throws IOException {
-		File file = new File(SCRIPT_DIR + "/" + path);
-		if (!file.exists()) {
+		final String SCRIPT_DIR = App.config.getString("resource.dir.scripts", Config.APP_SCRIPT_DIR);
+
+		InputStream inputStream = DBHelper.class.getClassLoader().getResourceAsStream(SCRIPT_DIR + "/" + path);
+
+		StringBuilder sb = new StringBuilder();
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
+			br.lines().map(s -> s + "\n").forEach(sb::append);
+		} catch (IOException e){
 			throw new FileNotFoundException(String.format("Cannot find file %s at path %s", path, SCRIPT_DIR));
 		}
 
-		StringBuilder sb = new StringBuilder();
-		try (BufferedReader fr = new BufferedReader(new FileReader(file))) {
-			while (fr.ready()) {
-				sb.append(fr.readLine() + System.lineSeparator());
-			}
-		} catch (IOException e) {
-			throw new IOException(String.format("Cannot read file %s at path %s", path, SCRIPT_DIR));
-		}
 		return sb.toString();
 	}
 
@@ -210,16 +207,12 @@ public class DBHelper {
 
 			logger.info("Importing preset");
 			String filePath = App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/initial.xml";
-			File file = new File(filePath);
-			if (file.exists()) {
-				try {
-					ExportImport.importXML(file);
-				} catch (JAXBException e) {
-					logger.info("Failed to import preset " + file.getAbsolutePath());
-					logger.info(e);
-				}
-			} else {
-				logger.info("no preset found at path: " + file.getAbsolutePath());
+
+			try(InputStream is = DBHelper.class.getClassLoader().getResourceAsStream(filePath)) {
+				ExportImport.importXML(is);
+			} catch (IOException | JAXBException e) {
+				logger.info("Failed to import preset " + filePath);
+				logger.info(e);
 			}
 		}
 	}

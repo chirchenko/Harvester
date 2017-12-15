@@ -1,6 +1,7 @@
 package tools;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.SQLException;
 
 import javax.xml.bind.JAXBContext;
@@ -31,9 +32,9 @@ public class ExportImport {
 		}
 	}
 	
-	public static void importXML(File file) throws JAXBException, SQLException {	
+	public static void importXML(InputStream is) throws JAXBException, SQLException {
 		Unmarshaller jaxbUnmarshaller = JAXBContext.newInstance(Domains.class).createUnmarshaller();
-		Domains domains = (Domains) jaxbUnmarshaller.unmarshal(file);
+		Domains domains = (Domains) jaxbUnmarshaller.unmarshal(is);
 		
 		if(domains.machines != null){
 			
