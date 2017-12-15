@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,7 +29,6 @@ import tools.IOTools;
 import logginig.LogListener;
 import logginig.Logger;
 
-@SuppressWarnings("serial")
 public class WindowLogo extends JWindow implements ActionListener {
 	private String imagePath = App.config.getString("resource.image.logo", Config.APP_LOGO_IMAGE);
 	private StatusLabel label;

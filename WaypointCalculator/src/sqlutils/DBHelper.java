@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 
 import calculator.App;
-import com.sun.istack.internal.NotNull;
 import logginig.Logger;
 import tools.Config;
 import tools.ExportImport;

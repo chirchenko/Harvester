@@ -57,6 +57,7 @@
 				<include name="${resources.dir}/**"/>
 				<include name="${export.dir}/**"/>
 				<include name="*.properties"/>
+				<exclude name="build.properties" />
 			</fileset>
 		</copy>
 		
@@ -70,15 +71,12 @@
 		<fileset dir="${lib.dir}">
 			<include name="*.jar"/>
 		</fileset>
-		<fileset dir="/">
-			<include name="*.properties"/>
-		</fileset>
 		<pathelement path="${classes.dir}"/>
 	</path>
 
 	<target name="build" description="Create class files" depends="clean">
 		<mkdir dir="${classes.dir}"/>
-		<javac destdir="${classes.dir}" source="1.8" target="1.8" includeantruntime="false" encoding="UTF-8">
+		<javac destdir="${classes.dir}" source="1.8" target="1.8" includeantruntime="false" encoding="UTF-8" verbose="true">
 			<src path="${src.dir}"/>
 			<classpath refid="build-classpath"/>
 		</javac>
