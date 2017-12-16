@@ -34,7 +34,8 @@ public class GoogleTools {
 //		return 156543.03392 * Math.cos(latitude * Math.PI / 180) / Math.pow(2, zoom);
 //		WRONG
 //	}
-	
+
+	//TODO Stroke width is calculated incorrectly
 	public static double getMetersPerPixel(int zoom, double latitude){
 		double factor = 0.009330692;
 		for(int refZoom = 24; refZoom > zoom + 1; refZoom--){

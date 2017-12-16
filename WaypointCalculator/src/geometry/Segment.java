@@ -14,7 +14,6 @@ public class Segment implements Displayable{
 	
 	public Segment() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public Segment(Point a, Point b) {
 		super();

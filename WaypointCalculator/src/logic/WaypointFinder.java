@@ -110,7 +110,8 @@ public class WaypointFinder {
 		if(waypoints.size() > 1){
 			path = new Path();
 		}			
-		
+
+		//TODO Consider changing method of collection resulting points
 		Point startPoint = waypoints.get(0);
 		addSequence(startPoint);
 					

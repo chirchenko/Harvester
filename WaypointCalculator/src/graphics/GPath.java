@@ -27,6 +27,7 @@ public class GPath extends Path2D.Float implements CanvasObject {
 		this.color = color;
 	}
 
+	//TODO Rewrite this method to add line overlay(by implementing strokes)
 	@Override
 	public void show(Graphics g) {
 		this.reset();
@@ -34,7 +35,9 @@ public class GPath extends Path2D.Float implements CanvasObject {
 			return;
 		}
 		
-		int brushSize = (int) (canvas.display.machine.workWidth * GoogleTools.getMetersPerPixel(canvas.display.zoom - 1, canvas.display.map.center.getLatitude()));
+		int brushSize = (int) (canvas.display.machine.workWidth
+				                       * GoogleTools.getMetersPerPixel(canvas.display.zoom - 1
+				, canvas.display.map.center.getLatitude()));
 		
 		this.moveTo(canvas.getDisplayX(waypoints.getWaypoints().get(0).getLongitude()), 
 				canvas.getDisplayY(waypoints.getWaypoints().get(0).getLatitude()));
