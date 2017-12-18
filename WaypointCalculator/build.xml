@@ -17,30 +17,26 @@
 	</target>
 
 	<!--JAR-->
-	<path id="build-jar-classpath">
-		<fileset dir="${build.dir}" includes="${lib.dir}/*.jar" excludes="${lib.dir}/${name}*.jar"/>
-		<fileset dir="/">
-			<include name="*.properties"/>
+	<path id="build-classpath">
+		<fileset dir="${build.dir}/lib">
+			<include name="*.jar"/>
 		</fileset>
+		<pathelement path="${build.dir}/${resources.dir}" />
 	</path>
+
+	<manifestclasspath property="manifestclasspath" jarfile="${build.dir}/lib/${name}.jar">
+		<classpath refid="build-classpath"/>
+	</manifestclasspath>
 
 	<target name="jar" description="Pack into jar file" depends="copy-dependancies">
 		<mkdir dir="${build.dir}"/>
-		
-		<pathconvert property="manifest.classpath" refid="build-jar-classpath">		
-			<mapper>
-			    <chainedmapper>
-				    <flattenmapper/>
-			    </chainedmapper>
-			</mapper>
-		</pathconvert>
-		
+
 		<jar destfile="${build.dir}/${name}.jar"
 			basedir="${classes.dir}">
 	
 			<manifest>
 				<attribute name="Main-Class" value="calculator.App"/>
-				<attribute name="Class-Path" value="${manifest.classpath}"/>
+				<attribute name="Class-Path" value="${manifestclasspath}"/>
 			</manifest>	
 		</jar>
 
@@ -56,7 +52,7 @@
 				<include name="${lib.dir}/**"/>
 				<include name="${resources.dir}/**"/>
 				<include name="${export.dir}/**"/>
-				<include name="*.properties"/>
+				<include name="${resources.dir}/*.properties"/>
 				<exclude name="build.properties" />
 			</fileset>
 		</copy>
