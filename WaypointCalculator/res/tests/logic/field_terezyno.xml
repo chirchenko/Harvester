@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<domains>
+    <fields>
+        <field>
+            <name>Терезино №603</name>
+            <points>
+                <point>
+                    <lat>49.856666</lat>
+                    <lon>30.122131</lon>
+                </point>
+                <point>
+                    <lat>49.855485</lat>
+                    <lon>30.121552</lon>
+                </point>
+                <point>
+                    <lat>49.8561</lat>
+                    <lon>30.117736</lon>
+                </point>
+                <point>
+                    <lat>49.856143</lat>
+                    <lon>30.116169</lon>
+                </point>
+                <point>
+                    <lat>49.856625</lat>
+                    <lon>30.116229</lon>
+                </point>
+                <point>
+                    <lat>49.856646</lat>
+                    <lon>30.115896</lon>
+                </point>
+                <point>
+                    <lat>49.857538</lat>
+                    <lon>30.115832</lon>
+                </point>
+            </points>
+        </field>
+    </fields>
+</domains>

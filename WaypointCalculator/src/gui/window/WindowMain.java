@@ -9,10 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -167,7 +165,7 @@ public class WindowMain extends JFrame{
 		
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 			try {
-				ExportImport.exportXML(fileChooser.getSelectedFile());
+				ExportImport.exportToXML(fileChooser.getSelectedFile());
 				JOptionPane.showMessageDialog(this,
 					    "Exported completed");
 			} catch (JAXBException e) {
@@ -192,7 +190,7 @@ public class WindowMain extends JFrame{
 		logger.info("Import data");
 		if (fileChooser.showDialog(this, "Import") == JFileChooser.APPROVE_OPTION) {
 			try {
-				ExportImport.importXML(new FileInputStream(fileChooser.getSelectedFile()));
+				ExportImport.importFromXML(new FileInputStream(fileChooser.getSelectedFile()));
 				Machinery.loadAll();
 				Points.loadAll();
 				Fields.loadAll();

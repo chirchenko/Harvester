@@ -19,7 +19,7 @@ import logginig.Logger;
 public class ExportImport {
 	private static Logger logger = Logger.getLogger(ExportImport.class);
 
-	public static void exportXML(File file) throws JAXBException {
+	public static void exportToXML(File file) throws JAXBException {
 		try{
 			Marshaller jaxbMarshaller = JAXBContext
 					.newInstance(Domains.class)
@@ -32,9 +32,8 @@ public class ExportImport {
 		}
 	}
 	
-	public static void importXML(InputStream is) throws JAXBException, SQLException {
-		Unmarshaller jaxbUnmarshaller = JAXBContext.newInstance(Domains.class).createUnmarshaller();
-		Domains domains = (Domains) jaxbUnmarshaller.unmarshal(is);
+	public static void importFromXML(InputStream is) throws JAXBException, SQLException {
+		Domains domains = importDomains(is);
 		
 		if(domains.machines != null){
 			
@@ -57,5 +56,10 @@ public class ExportImport {
 				f.save();				
 			}
 		}
+	}
+
+	public static Domains importDomains(InputStream is) throws JAXBException{
+		Unmarshaller jaxbUnmarshaller = JAXBContext.newInstance(Domains.class).createUnmarshaller();
+		return (Domains) jaxbUnmarshaller.unmarshal(is);
 	}
 }

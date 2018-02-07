@@ -1,12 +1,6 @@
 package logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import geometry.Line;
 import geometry.Path;
@@ -21,34 +15,27 @@ public class WaypointFinder {
 	
 	private List<Point> waypoints = new ArrayList<>(); 
 	private Path path = null;
-	Map<Segment, List<Point>> intersectionsSegment = new HashMap<>();
-	Map<Line, Set<Point>> intersectionsLine = new HashMap<>();
-	Map<Point, Line> pointLine = new HashMap<>();
-	List<Line> divisionLines = new ArrayList<>();
-	
-	public Segment ovf;
+	private Map<Line, Set<Point>> intersectionsLine = new HashMap<>();
+	private Map<Point, Line> pointLine = new HashMap<>();
+	private List<Line> divisionLines = new ArrayList<>();
 
-	private List<Segment> formSegments;
-	
 	public WaypointFinder(List<domains.Points.Point> points, double width) {
 		
 		Polygon poly = new Polygon(points);
 		/*
 		 *1) Для кожноі точки formPoints[n] і formPoints[n+1] отримати відоізки які вони утворюють: formSegments 
 		 */
-		formSegments = poly.getSegments();
-		logging.info(String.format("---------------------------"));
+		List<Segment> formSegments = poly.getSegments();
+		logging.info("---------------------------");
 		
 		/*
 		 * 2)Знайти область визначення фігури відносно відрізка base
 		 * Отримаємо пряму на якій ледить відр. base
 		 */
-		Segment longest = null;
-		for(Segment s : formSegments){
-			if(longest == null || s.getLength() > longest.getLength()) longest = s; 
-		}
+		Segment longest = formSegments.stream().max(Comparator.comparing(Segment::getLength)).get();
+
 		Line baseLine = longest.getLine().getPerprndicularAtPoint(poly.getDimention().getCenter());
-		ovf = baseLine.getProjection(poly.toArray(new Point[0]));
+		Segment ovf = baseLine.getProjection(poly.toArray(new Point[0]));
 		
 		/*
 		 * 3) Поділити відрізок ovf на devidor, знайти координати точок поділу: devisionPoints[u-1]
@@ -58,7 +45,7 @@ public class WaypointFinder {
 			sections++;
 		}
 		List<Point> devisionPoints = ovf.devideSegment(sections);
-		logging.info(String.format("---------------------------"));
+		logging.info("---------------------------");
 				
 		/*
 		 * 4) Для кожної з прямих devisionLines[m] для кожної з ліній на яких лежать відрізки formSegments[n] Визначити точки перетину які вони утвоюють...
@@ -81,6 +68,7 @@ public class WaypointFinder {
 			logging.info(String.format("\nDevision line %s", dl));
 			for(Segment segment : formSegments){
 				List<Point> segmentPoint;
+				Map<Segment, List<Point>> intersectionsSegment = new HashMap<>();
 				if(intersectionsSegment.get(segment) == null){
 					segmentPoint = new ArrayList<>();
 					intersectionsSegment.put(segment, segmentPoint);

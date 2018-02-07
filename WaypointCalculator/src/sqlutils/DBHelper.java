@@ -2,15 +2,12 @@ package sqlutils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -208,7 +205,7 @@ public class DBHelper {
 			String filePath = App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/initial.xml";
 
 			try(InputStream is = DBHelper.class.getClassLoader().getResourceAsStream(filePath)) {
-				ExportImport.importXML(is);
+				ExportImport.importFromXML(is);
 			} catch (IOException | JAXBException e) {
 				logger.info("Failed to import preset " + filePath);
 				logger.info(e);
