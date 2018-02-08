@@ -1,9 +1,12 @@
 package geometry;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import calculator.App;
+import javafx.util.Pair;
 import logginig.Logger;
 
 public class Line implements Displayable{
@@ -11,7 +14,7 @@ public class Line implements Displayable{
 	private double A;
 	private double B;
 	private double C;
-	private static Logger logger = Logger.getLogger(Line.class);	
+	private static final Logger logger = Logger.getLogger(Line.class);
 	
 	private Line(double A, double B, double C) {
 		super();
@@ -84,11 +87,11 @@ public class Line implements Displayable{
 	 * @return Point value where these line intersects or null if they are parallel
 	 */
 	public Point getIntersectionWithLine(Line l){
-		logger.trace(String.format("\n  Obtaining intersectionpoint for lines:"));
+		logger.trace("\n  Obtaining intersectionpoint for lines:");
 		logger.trace(String.format("  \\/%s", this));
 		logger.trace(String.format("  /\\%s", l));
 		if((this.A * l.getB() - l.getA() * this.B) == 0){
-			logger.trace(String.format("null"));
+			logger.trace("null");
 			return null; //Parallel
 		}
 		double lon = Point.round( -1.0 * (this.C * l.getB() - l.getC() * this.B) / (this.A * l.getB() - l.getA() * this.B), App.COORDINATE_PRECISION);
@@ -137,7 +140,7 @@ public class Line implements Displayable{
 		return new Segment(new Point(x1,y1), new Point(x2,y2));
 	}
 	
-	public Point getProjection(Point p){
+	private Point getProjection(Point p){
 		return this.getPerprndicularAtPoint(p).getIntersectionWithLine(this);
 	}
 	
@@ -147,24 +150,39 @@ public class Line implements Displayable{
 	 * @param list - the List of the points for which determination area is calculated
 	 * @return An instance of a Segment containing the most outer points of projection on Line
 	 */
-	public Segment getProjection(Point ...list){
-		Point maxP = null, maxD = null;
-		double distance, max = 0;
-		List<Point> proj = new ArrayList<>();
-		for(Point p : list){
-			proj.add(this.getProjection(p));
-		}
-		for(Point p : proj){
-			for(Point d : proj){
-				distance = p.distanceTo(d);
-				if(distance > max){
-					max = distance;
-					maxP = p;
-					maxD = d;
-				}
-			}
-		}
-		return new Segment(maxP, maxD);
+	public Segment getProjection(List<Point> list){
+//		Point maxP = null, maxD = null;
+//		double distance, max = 0;
+//		List<Point> proj = new ArrayList<>();
+//		for(Point p : list){
+//			proj.add(this.getProjection(p));
+//		}
+//		for(Point p : proj){
+//			for(Point d : proj){
+//				distance = p.distanceTo(d);
+//				if(distance > max){
+//					max = distance;
+//					maxP = p;
+//					maxD = d;
+//				}
+//			}
+//		}
+//		return new Segment(maxP, maxD);
+		list.stream()
+				.flatMap(p1 -> list.stream()
+						.map(p2 -> new Segment(p1, p2)))
+				.map(s -> new Pair<>(s.getLength(), s))
+				.forEach(System.out::println);
+
+		 Segment result = list.stream()
+				.flatMap(p1 -> list.stream()
+						.map(p2 -> new Segment(p1, p2)))
+				.map(s -> new Pair<>(s.getLength(), s))
+				.max(Comparator.comparing(Pair::getKey))
+				.get()
+				.getValue();
+		System.out.println("!!!!Result:" + result);
+		return result;
 	}
 	
 	/**
@@ -193,7 +211,7 @@ public class Line implements Displayable{
 		return new Line(A, B, C); 
 	}
 
-	public double getA() {
+	private double getA() {
 		return A;
 	}
 
@@ -201,7 +219,7 @@ public class Line implements Displayable{
 		A = a;
 	}
 
-	public double getB() {
+	private double getB() {
 		return B;
 	}
 
@@ -209,7 +227,7 @@ public class Line implements Displayable{
 		B = b;
 	}
 
-	public double getC() {
+	private double getC() {
 		return C;
 	}
 
