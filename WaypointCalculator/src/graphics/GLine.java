@@ -13,10 +13,10 @@ import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GLine  extends Line2D.Float implements CanvasObject {
-	private Color color;
-	private int size = 1;
-	private CanvasPanel canvas;
-	private Line line;
+	private final Color color;
+	private final int size = 1;
+	private final CanvasPanel canvas;
+	private final Line line;
 	
 	public GLine(Line line, CanvasPanel canvas, Color color) {
 		super();

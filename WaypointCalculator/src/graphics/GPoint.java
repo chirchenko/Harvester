@@ -7,15 +7,16 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 
-import calculator.App;
 import gui.CanvasPanel;
+import tools.Config;
+import tools.Parameter;
 
 @SuppressWarnings("serial")
 public class GPoint extends Point implements CanvasObject {
-	private Color color;
-	private int size = 5;
-	private CanvasPanel canvas;
-	private geometry.Point point;
+	private final Color color;
+	private final int size = 5;
+	private final CanvasPanel canvas;
+	private final geometry.Point point;
 
 	public GPoint(geometry.Point point, CanvasPanel canvas, Color color) {
 		super();
@@ -35,7 +36,7 @@ public class GPoint extends Point implements CanvasObject {
 		g2.setPaint(color);
 		g2.fill(new Ellipse2D.Double(this.getX() - size/2, this.getY() - size/2, size, size));
 		
-		if(App.config.getBoolean("graphics.point.captions", "true")){
+		if(Config.getBoolean(Parameter.GRAPH_POINT_CAPTION)){
 			g2.setPaint(Color.LIGHT_GRAY);
 			int indentX = 10, indentY = -10;
 			g2.drawString(point.toString(), x + indentX, y + indentY);

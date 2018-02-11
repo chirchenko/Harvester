@@ -2,7 +2,6 @@ package geometry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 
 import calculator.App;
@@ -42,9 +41,7 @@ public class Point implements Displayable{
 		        Math.sin(Δλ/2) * Math.sin(Δλ/2);
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-		double d = R * c;
-		
-		return d;
+		return R * c;
 	}
 	
 	public Point moveTo(double direction, double distance){
@@ -71,23 +68,23 @@ public class Point implements Displayable{
 		return degree * Math.PI / 180;
 	}
 	
-	public static double toDeg(double radians) {
+	private static double toDeg(double radians) {
 		return radians * 180 / Math.PI;
 	}
 
-	public static Comparator<Point> getPointComparator(Line base){
-		return new Comparator<Point>() {
-			@Override
-			public int compare(Point o1, Point o2) {
-				Point intersection = base.getIntersectionWithLine(base.getPerprndicularAtPoint(o1));
-				if(!intersection.equals(base.getIntersectionWithLine(base.getPerprndicularAtPoint(o2)))){
-					logger.info("Impossible condition");
-				}
-				double diff = o1.distanceTo(intersection) - o2.distanceTo(intersection);
-				return diff < 0 ? -1 : diff > 0 ? 1 : 0;
-			}
-		};
-	}
+//	public static Comparator<Point> getPointComparator(Line base){
+//		return new Comparator<Point>() {
+//			@Override
+//			public int compare(Point o1, Point o2) {
+//				Point intersection = base.getIntersectionWithLine(base.getPerprndicularAtPoint(o1));
+//				if(!intersection.equals(base.getIntersectionWithLine(base.getPerprndicularAtPoint(o2)))){
+//					logger.info("Impossible condition");
+//				}
+//				double diff = o1.distanceTo(intersection) - o2.distanceTo(intersection);
+//				return diff < 0 ? -1 : diff > 0 ? 1 : 0;
+//			}
+//		};
+//	}
 	
 	public static double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
@@ -120,11 +117,7 @@ public class Point implements Displayable{
 		if (getClass() != obj.getClass())
 			return false;
 		Point other = (Point) obj;
-		if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
-			return false;
-		if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
-			return false;
-		return true;
+		return Double.doubleToLongBits(latitude) == Double.doubleToLongBits(other.latitude) && Double.doubleToLongBits(longitude) == Double.doubleToLongBits(other.longitude);
 	}
 
 	public double getLatitude() {
@@ -146,9 +139,9 @@ public class Point implements Displayable{
 	
 	public static Point getCenterOfMass(Point ...points){
 		double sumLat = 0, sumLong = 0;
-		for (int i = 0; i < points.length; i++) {
-			sumLat += points[i].getLatitude();
-			sumLong += points[i].getLongitude();
+		for (Point point : points) {
+			sumLat += point.getLatitude();
+			sumLong += point.getLongitude();
 		}
 		return new Point(sumLat/points.length, sumLong/points.length);
 	}

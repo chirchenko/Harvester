@@ -11,11 +11,11 @@ import sqlutils.DBHelper;
 
 public class Machinery extends PersistentContainer<Machine>{
 
-	private static List<Machine> entityList = new ArrayList<>();
+	private static final List<Machine> entityList = new ArrayList<>();
 	
-	public final static String TABLE_NAME = "MACHINERY";
+	private final static String TABLE_NAME = "MACHINERY";
 	
-	public static Logger logger = Logger.getLogger(Machinery.class);
+	private static final Logger logger = Logger.getLogger(Machinery.class);
 	
 	public Machinery() throws SQLException{
 		instance = this;
@@ -37,7 +37,7 @@ public class Machinery extends PersistentContainer<Machine>{
 		}
 		
 		@Override
-		public void save() throws SQLException{
+		public void save() throws RuntimeException{
 			int idx = entityList.indexOf(this);
 			if(idx == -1){
 				this.id = DBHelper.getNextSequence(TABLE_NAME);
@@ -46,8 +46,11 @@ public class Machinery extends PersistentContainer<Machine>{
 				this.id = entityList.get(idx).id;
 				entityList.set(idx, this);
 			}
-			
-			persist();
+			try {
+				persist();
+			}catch (SQLException e){
+				throw new RuntimeException(e);
+			}
 		}
 		
 		@Override
@@ -107,11 +110,8 @@ public class Machinery extends PersistentContainer<Machine>{
 				return false;
 			Machine other = (Machine) obj;
 			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			return true;
+				return other.name == null;
+			} else return name.equals(other.name);
 		}
 		
 		@Override

@@ -2,6 +2,7 @@ package sqlutils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,14 +12,15 @@ import java.sql.Statement;
 
 import javax.xml.bind.JAXBException;
 
-import calculator.App;
+import domains.PersistentObject;
 import logginig.Logger;
 import tools.Config;
 import tools.ExportImport;
+import tools.Parameter;
 
 public class DBHelper {
 	private static Connection connection = null;
-	private static Logger logger = Logger.getLogger(DBHelper.class);
+	private static final Logger logger = Logger.getLogger(DBHelper.class);
 
 	private final static String SQL_DRIVER = "org.sqlite.JDBC";
 	private final static String SQL_DB_JDBC = "jdbc:sqlite:";
@@ -59,7 +61,7 @@ public class DBHelper {
 	public static int executeUpdate(String sqlText, Object[] parameters) throws SQLException {
 		PreparedStatement stmt = null;
 		Connection c = DBHelper.getConnection();
-		int res = 0;
+		int res;
 		if (c == null)
 			return 0;
 		try {
@@ -81,7 +83,7 @@ public class DBHelper {
 		return res;
 	}
 
-	public static int executePlainUpdate(String sqlText) {
+	private static int executePlainUpdate(String sqlText) {
 		Statement stmt = null;
 		Connection c = DBHelper.getConnection();
 		int res = 0;
@@ -121,8 +123,8 @@ public class DBHelper {
 		return connection;
 	}
 
-	public static String getSqlText(String path) throws IOException {
-		final String SCRIPT_DIR = App.config.getString("resource.dir.scripts", Config.APP_SCRIPT_DIR);
+	private static String getSqlText(String path) throws IOException {
+		final String SCRIPT_DIR = Config.getString(Parameter.APP_SCRIPT_DIR);
 
 		InputStream inputStream = DBHelper.class.getClassLoader().getResourceAsStream(SCRIPT_DIR + "/" + path);
 
@@ -136,9 +138,9 @@ public class DBHelper {
 		return sb.toString();
 	}
 
-	public static int getCurrentSequence(String tableName) throws SQLException {
+	private static int getCurrentSequence(String tableName) throws RuntimeException {
 		if(tableName == null) logger.info("Empty table name");
-		int res = -1;
+		int res;
 		Connection conn = getConnection();
 		try {
 			Statement stmt = conn.createStatement();
@@ -148,16 +150,16 @@ public class DBHelper {
 			rs.close();
 		} catch (SQLException e) {
 			logger.info("Cannot get sequence for table " + tableName);
-			throw e;
+			throw new RuntimeException(e);
 		}
 
 		return res;
 	}
 
-	public static int getNextSequence(String tableName) throws SQLException {
+	public static int getNextSequence(String tableName) throws RuntimeException {
 		int res = getCurrentSequence(tableName);
 		if (res == -1)
-			throw new SQLException("Impossible sequence value -1");
+			throw new RuntimeException("Impossible sequence value -1");
 		res++;
 		Connection conn = getConnection();
 		try {
@@ -165,7 +167,7 @@ public class DBHelper {
 			stmt.executeUpdate(String.format("UPDATE DB_INFO SET VAL = %d WHERE NAME = '%s_SEQUENCE'", res, tableName));
 		} catch (SQLException e) {
 			logger.debug("Cannot get sequence for table " + tableName);
-			throw e;
+			throw new RuntimeException(e);
 		}
 
 		return res;
@@ -192,7 +194,7 @@ public class DBHelper {
 			String coreScript = getSqlText("create-schema.sql");
 			
 			BufferedReader br = new BufferedReader(new StringReader(coreScript));
-			String line = null;
+			String line;
 			while( (line=br.readLine()) != null )			{
 				logger.info(line);
 			}
@@ -202,14 +204,22 @@ public class DBHelper {
 			}
 
 			logger.info("Importing preset");
-			String filePath = App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/initial.xml";
+			String filePath = Config.getString(Parameter.APP_EXPORT_DIR) + "/initial.xml";
 
 			try(InputStream is = DBHelper.class.getClassLoader().getResourceAsStream(filePath)) {
-				ExportImport.importFromXML(is);
-			} catch (IOException | JAXBException e) {
+				ExportImport.importFromXML(is, PersistentObject::save);
+			} catch (IOException | JAXBException | RuntimeException e) {
 				logger.info("Failed to import preset " + filePath);
 				logger.info(e);
 			}
+		}
+	}
+
+	public static void dropDB() {
+		try {
+			java.nio.file.Files.delete(Paths.get("database.db"));
+		} catch (IOException e) {
+			logger.info(e);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package domains;
 
 public interface ToolTipRecord {
-	public default String getTooltip(){
+	default String getTooltip(){
 		return this.toString();
 	};
 }

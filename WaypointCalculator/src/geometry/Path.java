@@ -44,11 +44,8 @@ public class Path implements Displayable{
 			return false;
 		Path other = (Path) obj;
 		if (waypoints == null) {
-			if (other.waypoints != null)
-				return false;
-		} else if (!waypoints.equals(other.waypoints))
-			return false;
-		return true;
+			return other.waypoints == null;
+		} else return waypoints.equals(other.waypoints);
 	}
 
 	public boolean containsAll(List<Point> waypoints2) {

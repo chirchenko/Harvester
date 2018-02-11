@@ -7,14 +7,14 @@ public abstract class AbstractLogger {
 
 private static int logLevel = 4;
 	
-	protected Class<?> clazz;
-	protected static Set<LogListener> listeners = new HashSet<>();
+	final Class<?> clazz;
+	static final Set<LogListener> listeners = new HashSet<>();
 	
-	public static enum LogLevel{
+	public enum LogLevel{
 		INFO(1), TRACE(2), DEBUG(4);
 		private final int mask;
 
-	    private LogLevel(int mask)
+	    LogLevel(int mask)
 	    {
 	        this.mask = mask;
 	    }
@@ -25,7 +25,7 @@ private static int logLevel = 4;
 	    }
 	}
 
-	protected AbstractLogger(Class<?> clazz){
+	AbstractLogger(Class<?> clazz){
 		this.clazz = clazz;
 	}
 	

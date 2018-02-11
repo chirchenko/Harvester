@@ -2,7 +2,7 @@ package gui.window;
 
 import java.awt.Color;
 
-public class GuiSettings {
+class GuiSettings {
 	private Color figureFillColor = Color.GRAY;
 	private Color figurePointColor = Color.GRAY;
 	private Color segmentLineColor = Color.GRAY;

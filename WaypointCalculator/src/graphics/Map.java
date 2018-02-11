@@ -3,30 +3,29 @@ package graphics;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import calculator.App;
 import geometry.Point;
 import gui.DisplayPanel;
 import logginig.Logger;
 import tools.Config;
 import tools.GoogleTools;
 import tools.IOTools;
+import tools.Parameter;
 
 public class Map{
 	
 	private Point SW, NE;
-	private BufferedImage image;
-	Logger logging = Logger.getLogger(Map.class);
+	private final BufferedImage image;
+	private final Logger logging = Logger.getLogger(Map.class);
 	
-	public Point center;
+	public final Point center;
 	
 	/**
 	 * Creates map to display polygon.
 	 * Map contains SW and NE points and GoogleMap image
-	 * @param polygon
 	 */
 	public Map(Dimention ovf, Dimension canvasSize, DisplayPanel display) {				
 		image = IOTools.getMapImage(GoogleTools.URL_PATTERN, ovf, canvasSize, display.zoom
-				, App.config.getString("resource.image.emptymap", Config.APP_BLANK_MAP));		
+				, Config.getString(Parameter.APP_BLANK_MAP));
 
 		Point center = ovf.getCenter(); 
 		if(image != null) {

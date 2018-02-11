@@ -1,45 +1,35 @@
 package tools;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import calculator.App;
 import logginig.Logger;
 
-public class Config extends Properties {
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
-	public static Logger logger = Logger.getLogger(App.class);
-	
-	public static String APP_ICON_PATH = "img/icon64.png";
-	public static String APP_BLANK_MAP = "img/blank.png";
-	public static String APP_LOGO_IMAGE = "img/logo.jpg";
-	public static String APP_EXPORT_DIR = "export";
-	public static String APP_SCRIPT_DIR = "scripts";
+public class Config {
+	private static final Logger logger = Logger.getLogger(App.class);
 
-	public Config() {
-		super();
-	}
-	
-	public Config(String path) throws IOException {
-		InputStream input = App.class.getClassLoader().getResourceAsStream(path);
-        if(input != null) {
-            this.load(input);
-        } else {
-        	logger.info("No property file found");
-        }
+	private static final String path = "app.properties";
+	private static final Properties properties;
+
+	static {
+		properties = new Properties();
+		try {
+			properties.load(App.class.getClassLoader().getResourceAsStream(path));
+		} catch (IOException e) {
+			logger.info("Unable to load configuration file: " + new File(path).getAbsolutePath());
+			logger.info(e);
+			System.exit(1);
+		}
 	}
 
-	public String getString(String key, String default_) {
-		return getProperty(key, default_);		
+	public static String getString(Parameter key){
+		return properties.getProperty(key.getKey(), key.getDefaultValue());
 	}
-	
-	public int getInt(String key, String default_) {
-		return Integer.valueOf(getProperty(key, default_));
-	}
-	
-	public boolean getBoolean(String key, String default_) {
-		return Boolean.valueOf(getProperty(key, default_));
+
+	public static Boolean getBoolean(Parameter key){
+		return Boolean.valueOf(getString(key));
 	}
 
 }

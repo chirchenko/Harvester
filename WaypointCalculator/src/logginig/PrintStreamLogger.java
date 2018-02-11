@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 public class PrintStreamLogger extends LogListenerImpl{
 
-	private PrintStream ps;
+	private final PrintStream ps;
 	
 	public PrintStreamLogger(PrintStream ps) {
 		super();

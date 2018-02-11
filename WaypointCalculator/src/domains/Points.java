@@ -14,11 +14,11 @@ import sqlutils.DBHelper;
 
 public class Points extends PersistentContainer<Point>{
 
-	private static List<Point> entityList = new ArrayList<>();
+	private static final List<Point> entityList = new ArrayList<>();
 
-	public final static String TABLE_NAME = "POINTS";
+	private final static String TABLE_NAME = "POINTS";
 
-	public static Logger logger = Logger.getLogger(Points.class);
+	private static final Logger logger = Logger.getLogger(Points.class);
 	
 	public Points() throws SQLException{
 		instance = this;
@@ -44,7 +44,7 @@ public class Points extends PersistentContainer<Point>{
 		}
 		
 		@Override
-		public void save() throws SQLException{
+		public void save() throws RuntimeException{
 			int idx = entityList.indexOf(this);
 			if(idx == -1){
 				this.id = DBHelper.getNextSequence(Points.TABLE_NAME);
@@ -122,11 +122,7 @@ public class Points extends PersistentContainer<Point>{
 			return String.format("[%f; %f]", lat, lon);
 		}		
 	}
-	
-	public static List<Point> getEntities() {
-		return entityList;
-	}
-	
+
 	public static void loadAll() throws SQLException{
 		logger.info("Loading Points" + "...");
 		ResultSet rs = DBHelper.executeQuery("SELECT ID, FIELD_ID, SEQ, LAT, LON FROM POINTS", null);
@@ -140,7 +136,6 @@ public class Points extends PersistentContainer<Point>{
 	
 	public static List<Point> getPoints(int fieldId){
 		return entityList.stream()
-				.map(r -> (Point) r)
 				.filter(t -> t.fieldId == fieldId)
 				.collect(Collectors.toList());
 	}

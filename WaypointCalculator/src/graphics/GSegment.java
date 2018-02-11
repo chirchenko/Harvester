@@ -12,10 +12,10 @@ import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GSegment extends Float implements CanvasObject {
-	private Color color;
-	private int size = 2;
-	private CanvasPanel canvas;
-	private Segment segment;
+	private final Color color;
+	private final int size = 2;
+	private final CanvasPanel canvas;
+	private final Segment segment;
 	
 	
 	public GSegment(Segment segment, CanvasPanel canvas, Color color) {

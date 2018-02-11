@@ -33,18 +33,18 @@ import logginig.Logger;
 public abstract class EntityDialog<T extends PersistentObject> extends JPanel 
 	implements ActionListener {
 
-	private Logger logger = Logger.getLogger(EntityDialog.class);
+	private final Logger logger = Logger.getLogger(EntityDialog.class);
 	
-	public JDialog dialog = null;
-	private Window owner = null;
+	private JDialog dialog = null;
+	private final Window owner;
 	private PersistentObject entity = null;
 	private JPanel entityPanel = new JPanel();
 	private JButton buttonOk;
 	private JButton buttonCancel;
 
-	private DataChangeListener dataChangeListener;
+	private final DataChangeListener dataChangeListener;
 
-	public EntityDialog(DataChangeListener dataChangeListener){
+	EntityDialog(DataChangeListener dataChangeListener){
 		this.owner = SwingUtilities.getWindowAncestor((Component) dataChangeListener);
 		this.dataChangeListener = dataChangeListener;
 		initBasicElements();
@@ -67,8 +67,8 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 		add(buttonCancel, c);
 	}
 
-	public abstract void composeEntityElements(JPanel panel, PersistentObject entity);
-	public abstract PersistentObject collectEntity(PersistentObject entity);
+	protected abstract void composeEntityElements(JPanel panel, PersistentObject entity);
+	protected abstract PersistentObject collectEntity(PersistentObject entity);
 
 	public void showDialog(PersistentObject entity) {
 		this.entity = entity.clone();
@@ -125,7 +125,7 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 
 	private class LocalDialog extends JDialog {
 
-		public LocalDialog(Frame owner) {
+		LocalDialog(Frame owner) {
 			super(owner);
 		}
 
@@ -176,7 +176,7 @@ public abstract class EntityDialog<T extends PersistentObject> extends JPanel
 		}
 	} 
 
-	public static void installEscapeCloseOperation(final JDialog dialog) {
+	private static void installEscapeCloseOperation(final JDialog dialog) {
 		Action dispatchClosing = new AbstractAction() {
 			public void actionPerformed(ActionEvent event) {
 				dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));

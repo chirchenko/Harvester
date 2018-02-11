@@ -6,7 +6,7 @@ public abstract class Vector {
 	double a, b, c;
 	
 	public static class CartesianVector extends Vector{		
-		public CartesianVector(double a, double b, double c) {
+		CartesianVector(double a, double b, double c) {
 			this.a = a;
 			this.b = b;
 			this.c = c;
@@ -23,9 +23,11 @@ public abstract class Vector {
 	}
 	
 	public static class GeoVector{
-		double r, ϕ, θ;
+		final double r;
+		final double ϕ;
+		final double θ;
 		
-		public GeoVector(double r, double φ, double θ) {
+		GeoVector(double r, double φ, double θ) {
 			super();
 			this.r = r;
 			this.ϕ = φ;
@@ -74,15 +76,15 @@ public abstract class Vector {
 		return getLength() == 0;
 	}
 	
-	public double getLength(){
+	private double getLength(){
 		return Math.sqrt(a*a + b*b + c*c);
 	}
 	
-	public static double cos(double degree){
+	private static double cos(double degree){
 		return Math.cos(Point.toRad(degree));
 	}
 	
-	public static double sin(double degree){
+	private static double sin(double degree){
 		return Math.sin(Point.toRad(degree));
 	}
 

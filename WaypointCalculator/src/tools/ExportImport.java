@@ -2,7 +2,7 @@ package tools;
 
 import java.io.File;
 import java.io.InputStream;
-import java.sql.SQLException;
+import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,7 +17,7 @@ import domains.PersistentObject;
 import logginig.Logger;
 
 public class ExportImport {
-	private static Logger logger = Logger.getLogger(ExportImport.class);
+	private static final Logger logger = Logger.getLogger(ExportImport.class);
 
 	public static void exportToXML(File file) throws JAXBException {
 		try{
@@ -32,7 +32,7 @@ public class ExportImport {
 		}
 	}
 	
-	public static void importFromXML(InputStream is) throws JAXBException, SQLException {
+	public static void importFromXML(InputStream is, Consumer<PersistentObject> consumer) throws JAXBException {
 		Domains domains = importDomains(is);
 		
 		if(domains.machines != null){
@@ -53,7 +53,7 @@ public class ExportImport {
 					continue;
 				};
 				logger.info("\t\tImporting " + f);
-				f.save();				
+				consumer.accept(f);
 			}
 		}
 	}

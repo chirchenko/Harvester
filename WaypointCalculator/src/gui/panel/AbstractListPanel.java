@@ -32,24 +32,24 @@ import logginig.Logger;
 public abstract class AbstractListPanel<T extends PersistentObject> extends JPanel 
 							implements DataChangeListener, MouseListener, ActionListener{
 
-	private Logger logger = Logger.getLogger(AbstractListPanel.class);
+	private final Logger logger = Logger.getLogger(AbstractListPanel.class);
 	
-	private SelectedListener selectedListener;
+	private final SelectedListener selectedListener;
 	
 	public interface SelectedListener {
-		public void onDoubleClick();
+		void onDoubleClick();
 	}
 	
-	protected T emptyEntity;
-	private EntityDialog<T> entityDialog = null;
+	T emptyEntity;
+	private final EntityDialog<T> entityDialog;
 	private JScrollPane scrollPane;
 	public JList<T> displayList;
 	
-	protected JButton buttonAdd;
-	protected JButton buttonRemove;
-	protected JButton buttonModify;
+	private JButton buttonAdd;
+	private JButton buttonRemove;
+	private JButton buttonModify;
 
-	public AbstractListPanel(String listName, SelectedListener selectedListener, T emptyEntity) {
+	AbstractListPanel(String listName, SelectedListener selectedListener, T emptyEntity) {
 		super();
 		this.selectedListener = selectedListener;
 		this.emptyEntity = emptyEntity;
@@ -60,9 +60,9 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 	    dataChanged();
 	}
 	
-	public abstract void populateListData(DefaultListModel<T> model);
+	protected abstract void populateListData(DefaultListModel<T> model);
 	
-	public abstract EntityDialog<T> assignDialog();
+	protected abstract EntityDialog<T> assignDialog();
 	
 
 	private void initAbstractUI(String listName) {
@@ -90,7 +90,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 		
 		this.displayList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	    this.displayList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-	    this.displayList.setModel(new DefaultListModel<T>());	    
+	    this.displayList.setModel(new DefaultListModel<>());
 	    this.displayList.addMouseListener(this);
 	    
         scrollPane = new JScrollPane(displayList
@@ -148,7 +148,7 @@ public abstract class AbstractListPanel<T extends PersistentObject> extends JPan
 		int cnt = displayList.getSelectedValuesList().size();
 		String elements = displayList.getSelectedValuesList()
 				.stream()
-				.map( e -> e.toString())
+				.map(Object::toString)
 				.collect(Collectors.joining("</li><li>"));
 		
 		Object[] options = {"Ok", "Cancel"};

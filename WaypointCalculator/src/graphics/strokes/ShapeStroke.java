@@ -20,11 +20,11 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class ShapeStroke implements Stroke {
-	private Shape shapes[];
-	private float advance;
+	private final Shape[] shapes;
+	private final float advance;
 	private boolean stretchToFit = false;
-	private boolean repeat = true;
-	private AffineTransform t = new AffineTransform();
+	private final boolean repeat = true;
+	private final AffineTransform t = new AffineTransform();
 	private static final float FLATNESS = 1;
 
 	public ShapeStroke( Shape shapes, float advance ) {
@@ -48,8 +48,8 @@ public class ShapeStroke implements Stroke {
 		float points[] = new float[6];
 		float moveX = 0, moveY = 0;
 		float lastX = 0, lastY = 0;
-		float thisX = 0, thisY = 0;
-		int type = 0;
+		float thisX, thisY;
+		int type;
 		boolean first = false;
 		float next = 0;
 		int currentShape = 0;
@@ -64,7 +64,6 @@ public class ShapeStroke implements Stroke {
 				moveX = lastX = points[0];
 				moveY = lastY = points[1];
 				result.moveTo( moveX, moveY );
-				first = true;
 				next = 0;
 				break;
 
@@ -95,7 +94,6 @@ public class ShapeStroke implements Stroke {
 					}
 				}
 				next -= distance;
-				first = false;
 				lastX = thisX;
 				lastY = thisY;
 				break;

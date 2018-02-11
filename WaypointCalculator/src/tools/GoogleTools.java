@@ -6,8 +6,8 @@ import logginig.Logger;
 public class GoogleTools {
 	public static Logger logger = Logger.getLogger(GoogleTools.class);
 	public final static int RADIUS = 6378137;
-	public final static int GLOBE_WIDTH = 256; // a constant in Google's map projection
-	public final static int ZOOM_MAX = 21;
+	private final static int GLOBE_WIDTH = 256; // a constant in Google's map projection
+	private final static int ZOOM_MAX = 21;
 	public final static String URL_PATTERN = "https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=%d&size=%dx%d&scale=2&maptype=hybrid&format=jpg";
 
 

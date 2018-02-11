@@ -10,9 +10,9 @@ public class Segment implements Displayable{
 	private Point a;
 	private Point b;
 	private double length;
-	private static Logger logger = Logger.getLogger(Segment.class);
+	private static final Logger logger = Logger.getLogger(Segment.class);
 	
-	public Segment() {
+	private Segment() {
 		super();
 	}
 	public Segment(Point a, Point b) {
@@ -20,7 +20,6 @@ public class Segment implements Displayable{
 		this.a = a;
 		this.b = b;
 		length = Point.round(a.distanceTo(b), App.COORDINATE_PRECISION + 2);
-		logger.info(String.format("  Segment created: %s", this));
 	}
 	
 	/*
@@ -100,11 +99,7 @@ public class Segment implements Displayable{
 		if (getClass() != obj.getClass())
 			return false;
 		Segment other = (Segment) obj;
-		if((this.a.equals(other.a) && this.b.equals(other.b)) || (this.a.equals(other.b) && this.b.equals(other.a)) ){
-			return true;
-		}else{
-			return false;
-		}
+		return (this.a.equals(other.a) && this.b.equals(other.b)) || (this.a.equals(other.b) && this.b.equals(other.a));
 	}
 	@Override
 	public String toString() {

@@ -1,9 +1,9 @@
 package geometry;
 
-public class CartesianPoint {	
-	public double x;
-	public double y; 
-	public double z;  
+class CartesianPoint {
+	private final double x;
+	private final double y;
+	private final double z;
 	
 	public CartesianPoint(double x, double y, double z) {
 		this.x = x;

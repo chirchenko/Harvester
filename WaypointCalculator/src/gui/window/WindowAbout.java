@@ -6,26 +6,19 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 import calculator.App;
 import tools.Config;
 import tools.IOTools;
+import tools.Parameter;
 
 @SuppressWarnings("serial")
-public class WindowAbout extends JFrame {
+class WindowAbout extends JFrame {
 
 	public WindowAbout() throws HeadlessException {
 		
@@ -39,18 +32,18 @@ public class WindowAbout extends JFrame {
 		left.setLayout(new GridBagLayout());
 		JLabel aboutLabel = new JLabel("Harvester");
 		aboutLabel.setFont(new Font("Consolas", Font.BOLD, 16));
-		aboutLabel.setHorizontalTextPosition(0);
+		aboutLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		
-		BufferedImage icon = IOTools.readImageFromUrl(App.config.getString("resource.image.icon", Config.APP_ICON_PATH));
+		BufferedImage icon = IOTools.readImageFromUrl(Config.getString(Parameter.APP_ICON_PATH));
     	setIconImage(icon); 
 
-		JLabel iconLabel = null;
+		JLabel iconLabel;
         if(icon != null){
         	iconLabel = new JLabel(new ImageIcon(icon));
         }else{
         	iconLabel = new JLabel(){
-        		@Override
-        		public void paint(Graphics g){
+		        @Override
+		        public void paint(Graphics g){
         			g.drawLine(0, 0, 64, 64);
         			g.drawLine(64, 0, 0, 64);
         		}

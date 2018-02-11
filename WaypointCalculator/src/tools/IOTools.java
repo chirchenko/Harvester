@@ -12,7 +12,7 @@ import graphics.Dimention;
 import logginig.Logger;
 
 public class IOTools {
-	private static Logger logger = Logger.getLogger(IOTools.class);
+	private static final Logger logger = Logger.getLogger(IOTools.class);
 	
 	/**
 	 * Returns image of map which fits given polygon on canvas size. Or returns default image 
@@ -57,9 +57,9 @@ public class IOTools {
 			} catch (IOException | IllegalArgumentException e) {
 				logger.info("Cannot read URL[" + new File(url) + "]: " + e.getMessage());
 				StackTraceElement[] stuck = e.getStackTrace();
-				for(int i = 0; i < stuck.length; i++){
-					logger.info("\tat " + stuck[i].toString());
-				}
+		        for (StackTraceElement aStuck : stuck) {
+			        logger.info("\tat " + aStuck.toString());
+		        }
 			}
 	    } else {
 	        System.err.println("Image URL is null");

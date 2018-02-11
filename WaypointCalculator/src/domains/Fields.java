@@ -15,10 +15,10 @@ import sqlutils.DBHelper;
 
 public class Fields extends PersistentContainer<Field>{
 
-	public final static String TABLE_NAME = "FIELDS";
-	private static List<Field> entityList = new ArrayList<>();
+	private final static String TABLE_NAME = "FIELDS";
+	private static final List<Field> entityList = new ArrayList<>();
 	
-	public static Logger logger = Logger.getLogger(Fields.class);
+	private static final Logger logger = Logger.getLogger(Fields.class);
 	
 	public Fields() throws SQLException{
 		instance = this;
@@ -41,7 +41,7 @@ public class Fields extends PersistentContainer<Field>{
 		}
 
 		@Override
-		public void save() throws SQLException {
+		public void save() throws RuntimeException {
 			int idx = entityList.indexOf(this);
 			if (idx == -1) {
 				this.id = DBHelper.getNextSequence(Fields.TABLE_NAME);
@@ -51,14 +51,19 @@ public class Fields extends PersistentContainer<Field>{
 				entityList.set(idx, this);
 			}
 
-			this.persist();
+			try{
+				this.persist();
 
-			for (Point point : this.points) {
-				point.fieldId = this.id;
-				point.seq = this.points.size();
-				point.save();
-				point.persist();
+				for (Point point : this.points) {
+					point.fieldId = this.id;
+					point.seq = this.points.size();
+					point.save();
+					point.persist();
+				}
+			} catch (SQLException e){
+				throw new RuntimeException(e);
 			}
+
 		}
 
 		@Override
@@ -103,11 +108,8 @@ public class Fields extends PersistentContainer<Field>{
 				return false;
 			Field other = (Field) obj;
 			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			return true;
+				return other.name == null;
+			} else return name.equals(other.name);
 		}
 		
 //		@Override

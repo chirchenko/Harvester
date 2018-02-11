@@ -19,14 +19,15 @@ package graphics.strokes;
 import java.awt.*;
 import java.awt.geom.*;
 
-public class CompoundStroke implements Stroke {
-    public final static int ADD = 0;
-    public final static int SUBTRACT = 1;
-    public final static int INTERSECT = 2;
-    public final static int DIFFERENCE = 3;
+class CompoundStroke implements Stroke {
+    private final static int ADD = 0;
+    private final static int SUBTRACT = 1;
+    private final static int INTERSECT = 2;
+    private final static int DIFFERENCE = 3;
 
-	private Stroke stroke1, stroke2;
-    private int operation;
+	private final Stroke stroke1;
+	private final Stroke stroke2;
+    private final int operation;
 
 	public CompoundStroke( Stroke stroke1, Stroke stroke2, int operation ) {
 		this.stroke1 = stroke1;

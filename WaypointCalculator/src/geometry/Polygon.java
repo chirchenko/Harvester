@@ -3,7 +3,6 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import domains.Points;
 import graphics.Dimention;
@@ -12,9 +11,9 @@ import logginig.Logger;
 @SuppressWarnings("serial")
 public class Polygon extends ArrayList<Point> implements Displayable{
 
-	private static Logger logger = Logger.getLogger(Polygon.class);
+	private static final Logger logger = Logger.getLogger(Polygon.class);
 
-	public Polygon() {
+	private Polygon() {
 		super();
 	}
 

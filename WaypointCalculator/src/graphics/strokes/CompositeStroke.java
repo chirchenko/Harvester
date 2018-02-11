@@ -18,8 +18,9 @@ package graphics.strokes;
 
 import java.awt.*;
 
-public class CompositeStroke implements Stroke {
-	private Stroke stroke1, stroke2;
+class CompositeStroke implements Stroke {
+	private final Stroke stroke1;
+	private final Stroke stroke2;
 
 	public CompositeStroke( Stroke stroke1, Stroke stroke2 ) {
 		this.stroke1 = stroke1;

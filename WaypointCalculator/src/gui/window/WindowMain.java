@@ -2,30 +2,23 @@ package gui.window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.bind.JAXBException;
 
-import calculator.App;
 import domains.Fields;
 import domains.Machinery;
+import domains.PersistentObject;
 import domains.Points;
 import geometry.Displayable;
 import geometry.Point;
@@ -39,14 +32,12 @@ import logic.WaypointFinder;
 import tools.Config;
 import tools.ExportImport;
 import tools.IOTools;
+import tools.Parameter;
 
 @SuppressWarnings("serial")
 public class WindowMain extends JFrame{
-	protected static Logger logger = Logger.getLogger(WindowMain.class);
-	
-	final static int windowWidth = 1280;
-	final static int windowhHeight = 924;
-	
+	private final static Logger logger = Logger.getLogger(WindowMain.class);
+
 	public static WindowMain instance;
 	
 	private FieldListPanel fieldList;
@@ -56,28 +47,21 @@ public class WindowMain extends JFrame{
 
 	private WaypointFinder wpf;
 
-	private WindowAbout aboutFrame = new WindowAbout();
-	
-	public static double workWidth = 0;
-	
+	private final WindowAbout aboutFrame = new WindowAbout();
+
 	public WindowMain() throws HeadlessException {
 		super();
-    	Image icon = IOTools.readImageFromUrl(App.config.getString("resource.image.icon", Config.APP_ICON_PATH));
-    	setIconImage(icon); 
-        
-		try {
-			initUI();
-		} catch (InstantiationException | IllegalAccessException e) {
-			logger.info("Failed to initialize interface");
-			logger.info(e);
-		}	
+    	Image icon = IOTools.readImageFromUrl(Config.getString(Parameter.APP_ICON_PATH));
+    	setIconImage(icon);
+
+		initUI();
 		
 		WindowMain.instance = this;
 	}
 
-	public void initUI() throws InstantiationException, IllegalAccessException {    
+	private void initUI() {
         setTitle("Waypoint Calculator");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         initMenu();       
         JPanel windowContainer = new JPanel(new BorderLayout());	    
@@ -156,10 +140,10 @@ public class WindowMain extends JFrame{
 
 	private void runExport() {
 		JFileChooser fileChooser = new JFileChooser(
-				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)));
+				new File(Config.getString(Parameter.APP_EXPORT_DIR)));
 		fileChooser.setDialogTitle("Export to");
 		fileChooser.setSelectedFile(
-				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)
+				new File(Config.getString(Parameter.APP_EXPORT_DIR)
 						+ "/export.xml"));
 		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
@@ -179,18 +163,19 @@ public class WindowMain extends JFrame{
 
 	private void runImport() {
 		JFileChooser fileChooser = new JFileChooser(
-				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR)));
+				new File(Config.getString(Parameter.APP_EXPORT_DIR)));
 		
 		fileChooser.setDialogTitle("Import from");
 		fileChooser.setSelectedFile(
-				new File(App.config.getString("resource.dir.export", Config.APP_EXPORT_DIR) + "/export.xml"));
+				new File(Config.getString(Parameter.APP_EXPORT_DIR) + "/export.xml"));
 		
 		fileChooser.setFileFilter(new FileNameExtensionFilter("XML document", "xml"));
 		
 		logger.info("Import data");
 		if (fileChooser.showDialog(this, "Import") == JFileChooser.APPROVE_OPTION) {
-			try {
-				ExportImport.importFromXML(new FileInputStream(fileChooser.getSelectedFile()));
+			try(InputStream is = new FileInputStream(fileChooser.getSelectedFile())) {
+				ExportImport.importFromXML(is, PersistentObject::save);
+
 				Machinery.loadAll();
 				Points.loadAll();
 				Fields.loadAll();
@@ -209,7 +194,7 @@ public class WindowMain extends JFrame{
 		}
 	}
 	
-	public void initMenu(){
+	private void initMenu(){
 		 JMenuBar menubar = new JMenuBar();
 
        JMenu file = new JMenu("File");
@@ -223,29 +208,21 @@ public class WindowMain extends JFrame{
 
        JMenuItem eMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
        eMenuItem.setToolTipText("Exit application");
-       eMenuItem.addActionListener((ActionEvent event) -> {
-           System.exit(0);
-       });
+       eMenuItem.addActionListener((ActionEvent event) -> System.exit(0));
        
        JMenuItem importMenuItem = new JMenuItem("Import", KeyEvent.VK_I);
        importMenuItem.setToolTipText("Import from XML file");
-       importMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK));
-       importMenuItem.addActionListener((ActionEvent event) -> {
-           runImport();
-       });
+       importMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+       importMenuItem.addActionListener((ActionEvent event) -> runImport());
        
        JMenuItem exportMenuItem = new JMenuItem("Export", KeyEvent.VK_E);
        exportMenuItem.setToolTipText("Export to XML file");
-       exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK));
-       exportMenuItem.addActionListener((ActionEvent event) -> {
-           runExport();
-       });
+       exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+       exportMenuItem.addActionListener((ActionEvent event) -> runExport());
        
        JMenuItem aboutMenuItem = new JMenuItem("About", KeyEvent.VK_A);
        aboutMenuItem.setToolTipText("Show information");
-       aboutMenuItem.addActionListener((ActionEvent event) -> {
-           runAbout();
-       });
+       aboutMenuItem.addActionListener((ActionEvent event) -> runAbout());
 
        file.add(eMenuItem);
        

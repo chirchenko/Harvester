@@ -17,9 +17,9 @@ import logginig.Logger;
 @SuppressWarnings("serial")
 public class ConsolePanel extends JPanel implements ActionListener {
 	
-	public JTextArea output;        
-    private JButton buttonExtend;
-    private WindowConsole consolFrame;
+	public final JTextArea output;
+    private final JButton buttonExtend;
+    private final WindowConsole consolFrame;
 
     public ConsolePanel() {
         setLayout(new BorderLayout());

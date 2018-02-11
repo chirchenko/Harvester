@@ -1,21 +1,27 @@
 package graphics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import geometry.Line;
 import geometry.Point;
 import geometry.Segment;
 
 public class Dimention{
-	private Segment vOvf, hOvf, diagonal, squareDiagonal;
-	private Point SW, NE, center;
+	private final Segment vOvf;
+	private final Segment hOvf;
+	private final Segment diagonal;
+	private Segment squareDiagonal;
+	private final Point SW;
+	private final Point NE;
+	private final Point center;
 	
 	public Dimention(ArrayList<Point> points) {
 		//rough center of mass represents average point concentration
 		Point centerDummy = Point.getCenterOfMass(points.toArray(new Point[0]));
 		//Segments progected on rough center of mass
-    	Segment vOvfDummy = Line.getVertical(centerDummy).getProjection(points.toArray(new Point[0]));
-		Segment hOvfDummy = Line.getHorizontal(centerDummy).getProjection(points.toArray(new Point[0]));
+    	Segment vOvfDummy = Line.getVertical(centerDummy).getProjection(points);
+		Segment hOvfDummy = Line.getHorizontal(centerDummy).getProjection(points);
 		
 		double latMin, lonMin, latMax, lonMax;
 		if(vOvfDummy.getA().getLatitude() < vOvfDummy.getB().getLatitude() ){
@@ -40,8 +46,8 @@ public class Dimention{
 		
 		this.center = Point.getCenterOfMass(diagonal.getA(), diagonal.getB());
 		
-		this.hOvf = Line.getHorizontal(center).getProjection(diagonal.getA(), diagonal.getB());
-		this.vOvf = Line.getVertical(center).getProjection(diagonal.getA(), diagonal.getB());
+		this.hOvf = Line.getHorizontal(center).getProjection(Arrays.asList(diagonal.getA(), diagonal.getB()));
+		this.vOvf = Line.getVertical(center).getProjection(Arrays.asList(diagonal.getA(), diagonal.getB()));
 		
 		if (vOvf.getLength() == hOvf.getLength()){
 			this.squareDiagonal = diagonal;

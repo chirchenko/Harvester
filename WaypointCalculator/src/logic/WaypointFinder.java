@@ -11,13 +11,13 @@ import logginig.Logger;
 
 public class WaypointFinder {
 
-	private static Logger logging = Logger.getLogger(WaypointFinder.class);
+	private static final Logger logging = Logger.getLogger(WaypointFinder.class);
 	
-	private List<Point> waypoints = new ArrayList<>(); 
+	private final List<Point> waypoints = new ArrayList<>();
 	private Path path = null;
-	private Map<Line, Set<Point>> intersectionsLine = new HashMap<>();
-	private Map<Point, Line> pointLine = new HashMap<>();
-	private List<Line> divisionLines = new ArrayList<>();
+	private final Map<Line, Set<Point>> intersectionsLine = new HashMap<>();
+	private final Map<Point, Line> pointLine = new HashMap<>();
+	private final List<Line> divisionLines = new ArrayList<>();
 
 	public WaypointFinder(List<domains.Points.Point> points, double width) {
 		
@@ -32,10 +32,10 @@ public class WaypointFinder {
 		 * 2)Знайти область визначення фігури відносно відрізка base
 		 * Отримаємо пряму на якій ледить відр. base
 		 */
-		Segment longest = formSegments.stream().max(Comparator.comparing(Segment::getLength)).get();
+		Segment longest = formSegments.stream().max(Comparator.comparing(Segment::getLength)).orElseThrow(IllegalStateException::new);
 
 		Line baseLine = longest.getLine().getPerprndicularAtPoint(poly.getDimention().getCenter());
-		Segment ovf = baseLine.getProjection(poly.toArray(new Point[0]));
+		Segment ovf = baseLine.getProjection(poly);
 		
 		/*
 		 * 3) Поділити відрізок ovf на devidor, знайти координати точок поділу: devisionPoints[u-1]
@@ -79,17 +79,17 @@ public class WaypointFinder {
 				logging.debug(String.format("  Find intersection point with segment line %s:\t", segment));
 				Point p = segment.getLine().getIntersectionWithLine(dl);
 				if(p == null){
-					logging.info(String.format("  Parallel"));
+					logging.info("  Parallel");
 					continue;
 				}
 				if(segment.contains(p)){
-					logging.info(String.format("  Belongs to segment\n"));
+					logging.info("  Belongs to segment\n");
 					segmentPoint.add(p);
 					linePoint.add(p);
 					pointLine.put(p, dl);
 					waypoints.add(p);
 				}else{
-					logging.info(String.format("  Does not belongs to segment\n"));
+					logging.info("  Does not belongs to segment\n");
 				}
 			}			
 						
@@ -103,7 +103,7 @@ public class WaypointFinder {
 		Point startPoint = waypoints.get(0);
 		addSequence(startPoint);
 					
-		logging.info(String.format("---------------------------"));
+		logging.info("---------------------------");
 				
 		for(Point p : waypoints){
 			logging.info(p.toString());

@@ -11,14 +11,12 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import calculator.App;
 import geometry.Line;
 import geometry.Path;
 import geometry.Point;
 import geometry.Polygon;
 import geometry.Segment;
 import graphics.CanvasObject;
-import graphics.Dimention;
 import graphics.GLine;
 import graphics.GPath;
 import graphics.GPoint;
@@ -27,20 +25,21 @@ import graphics.GSegment;
 import logginig.Logger;
 import tools.Config;
 import tools.IOTools;
+import tools.Parameter;
 
 @SuppressWarnings("serial")
 public class CanvasPanel extends JPanel {
 	Logger logger = Logger.getLogger(CanvasPanel.class);
 	
 	final static BasicStroke stroke = new BasicStroke(2.0f);
-	private List<CanvasObject> objects = new ArrayList<>();
-	private BufferedImage defaultImage;
+	private final List<CanvasObject> objects = new ArrayList<>();
+	private final BufferedImage defaultImage;
 	
-	int imageTopLeftX = 0;
-	int imageTopLeftY = 0;
-	public DisplayPanel display;
+	private int imageTopLeftX = 0;
+	private int imageTopLeftY = 0;
+	public final DisplayPanel display;
 	
-	public static enum CanvasElements{
+	public enum CanvasElements{
 		Point,
 		Line,
 		Segment,
@@ -55,12 +54,9 @@ public class CanvasPanel extends JPanel {
 		this.setBackground(Color.LIGHT_GRAY);
 
 		defaultImage = IOTools.getMapImage("", null, null, 0
-				, App.config.getString("resource.image.emptymap", Config.APP_BLANK_MAP));
+				, Config.getString(Parameter.APP_BLANK_MAP));
 		render();
 	}
-
-	public void setMapForArea(Dimention ovf){
-			}
 
 	@Override
 	public void paint(Graphics g) {

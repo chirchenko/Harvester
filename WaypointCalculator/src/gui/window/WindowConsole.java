@@ -12,7 +12,7 @@ import gui.ConsolePanel;
 
 @SuppressWarnings("serial")
 public class WindowConsole extends JFrame {
-	private ConsolePanel console;
+	private final ConsolePanel console;
 
 	public WindowConsole(ConsolePanel console) throws HeadlessException {
 		super("Console");

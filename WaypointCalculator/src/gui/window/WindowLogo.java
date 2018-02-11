@@ -9,7 +9,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -28,12 +27,13 @@ import tools.Config;
 import tools.IOTools;
 import logginig.LogListener;
 import logginig.Logger;
+import tools.Parameter;
 
 public class WindowLogo extends JWindow implements ActionListener {
-	private String imagePath = App.config.getString("resource.image.logo", Config.APP_LOGO_IMAGE);
+	private final String imagePath = Config.getString(Parameter.APP_LOGO_IMAGE);
 	private StatusLabel label;
 	
-	private static Logger logger = Logger.getLogger(WindowLogo.class);
+	private static final Logger logger = Logger.getLogger(WindowLogo.class);
 	
 	public WindowLogo(){
 
@@ -42,39 +42,40 @@ public class WindowLogo extends JWindow implements ActionListener {
 		
 		initIface(width, height);		
 		this.setLocation((App.dim.width/2) - width/2, (App.dim.height/2) - height/2);		
-		this.setSize((int)width, (int)height);
+		this.setSize(width, height);
 		this.setVisible(true);
-		
-		boolean deleteDBonStart = false;	//tmp
+
+		if(Config.getBoolean(Parameter.APP_RECREATE_DB)){
+			DBHelper.dropDB();
+		}
+
 		try {
-			if(deleteDBonStart){
-				File file = new File("database.db");
-				if(file.exists()){
-					file.delete();
-				}
-			}
 			initApplication();
-		} catch (SQLException | IOException e) {
+		} catch (RuntimeException e) {
 			logger.info("Application failed to start: " + e.getMessage());
 		}
 	}
 	
-	private void initApplication() throws SQLException, IOException {
+	private void initApplication() throws RuntimeException {
 		Logger.subscribe(label);
-		
-		logger.info("Starting application");
-		DBHelper.checkDB();
 
-		logger.info("Loading database");
-		new Points();
-		new Fields();
-		new Machinery();
+		try {
+			logger.info("Starting application");
+			DBHelper.checkDB();
+
+			logger.info("Loading database");
+			new Points();
+			new Fields();
+			new Machinery();
+		} catch (SQLException | IOException e){
+			throw new RuntimeException(e);
+		}
 		
 		logger.info("Application data ready");
 
 		/*
 		 * Прошу не змінювати і не видаляти наступний текст(копірайт) без відома автора.
-		 * Це все ж таки моя робота, зроблена з альтруыстичних міркувань.
+		 * Це все ж таки моя робота, зроблена з альтруістичних міркувань.
 		 * Користуйтеся нею на на здоров`я. Буду дуже радий якщо ця робота принесе користь.
 		 * З повагою, Олексій
 		 */
@@ -91,9 +92,7 @@ public class WindowLogo extends JWindow implements ActionListener {
 		WindowMain mw= new WindowMain();
 		mw.setSize(App.dim.width*3/4, App.dim.height*3/4);
 		mw.setLocationByPlatform(true);
-		EventQueue.invokeLater(() -> {
-			mw.setVisible(true);
-        });
+		EventQueue.invokeLater(() -> mw.setVisible(true));
 	}
 
 	private void initIface(double width, double height){
@@ -120,10 +119,10 @@ public class WindowLogo extends JWindow implements ActionListener {
 		button.addActionListener(this);
 	}
 	
-	public static class ImagePanel extends JPanel{
-		Image image;
+	static class ImagePanel extends JPanel{
+		final Image image;
 		
-		public ImagePanel(Image image) {
+		ImagePanel(Image image) {
 			super();
 			this.image = image;
 		}
@@ -139,7 +138,7 @@ public class WindowLogo extends JWindow implements ActionListener {
 	
 	public static class StatusLabel extends JLabel implements LogListener{
 
-		public StatusLabel() {
+		StatusLabel() {
 			super("Component initialized");
 			this.setFont(new Font("Consolas", Font.PLAIN, 16));
 		}

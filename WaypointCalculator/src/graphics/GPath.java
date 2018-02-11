@@ -16,9 +16,9 @@ import tools.GoogleTools;
 @SuppressWarnings("serial")
 public class GPath extends Path2D.Float implements CanvasObject {
 
-	private CanvasPanel canvas;
-	private Path waypoints;
-	private Color color;
+	private final CanvasPanel canvas;
+	private final Path waypoints;
+	private final Color color;
 
 	public GPath(Path waypoints, CanvasPanel jaCanvas, Color color) {
 		super();
@@ -49,7 +49,7 @@ public class GPath extends Path2D.Float implements CanvasObject {
 		 Graphics2D g2 = (Graphics2D) g;
 		 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		 
-		 ShapeStroke arrowStroke = new ShapeStroke(new Shape[] {(Shape) createArrow(brushSize, brushSize * 3)}, 300);
+		 ShapeStroke arrowStroke = new ShapeStroke(new Shape[] {createArrow(brushSize, brushSize * 3)}, 300);
 //		 g2.setPaint(Color.BLACK);
 //		 g2.setStroke(new BasicStroke(brushSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 //		 g2.draw(this);

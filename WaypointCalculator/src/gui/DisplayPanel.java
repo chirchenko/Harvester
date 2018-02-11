@@ -26,15 +26,15 @@ public class DisplayPanel extends JPanel{
 	public static final String GROUP_WP = "waypoints";
 	public static final String GROUP_SEGMENT = "segment";
 	
-	public JLabel label = new JLabel("Please select field");
+	public final JLabel label = new JLabel("Please select field");
 
-	private CanvasPanel canvas = new CanvasPanel(this);
+	private final CanvasPanel canvas = new CanvasPanel(this);
 	public Map map = null;
 	public Field field;
 	public Machine machine;
 	
 	public int zoom = 0;
-	private java.util.Map<String, List<CanvasObject>> objectGroups;
+	private final java.util.Map<String, List<CanvasObject>> objectGroups;
 	public double metersInPixel;
 	
 	public DisplayPanel() {
@@ -58,13 +58,7 @@ public class DisplayPanel extends JPanel{
 	}
 	
 	public void addDisplayObject(String objectGroupName, Displayable obj, Color color){
-		if(obj == null) return;
-		List<CanvasObject> list = objectGroups.get(objectGroupName);
-		if(list == null){
-			list = new ArrayList<>();
-			objectGroups.put(objectGroupName, list);
-		}
-		
+		List<CanvasObject> list = objectGroups.computeIfAbsent(objectGroupName, k -> new ArrayList<>());
 		list.add(canvas.createElement(obj, color));
 	}
 	

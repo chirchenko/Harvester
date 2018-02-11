@@ -11,9 +11,9 @@ import gui.CanvasPanel;
 
 @SuppressWarnings("serial")
 public class GPolygon extends java.awt.Polygon implements CanvasObject {
-	private Color color;
-	private CanvasPanel canvas;
-	private geometry.Polygon polygon;
+	private final Color color;
+	private final CanvasPanel canvas;
+	private final geometry.Polygon polygon;
 	
 	public GPolygon(Polygon polygon, CanvasPanel canvas, Color color) {
 		super();

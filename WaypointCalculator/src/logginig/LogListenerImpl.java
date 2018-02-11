@@ -8,7 +8,7 @@ public abstract class LogListenerImpl implements LogListener {
 		if ((level.getMask() & Logger.getLogLevel()) > 0)
 		{
 			if(message == null) return;
-			String source = (clazz == null) ? String.format("") : clazz.getSimpleName();
+			String source = (clazz == null) ? "" : clazz.getSimpleName();
 			
 			if(message.length() > 1 && "\n".equals(message.substring(0, 1))){
 				message = message.substring(1, message.length());
@@ -18,6 +18,6 @@ public abstract class LogListenerImpl implements LogListener {
 		}			
 	}
 	
-	public abstract void appendText(String messaage);
+	protected abstract void appendText(String messaage);
 	
 }
